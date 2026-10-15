@@ -1,0 +1,57 @@
+<a href="/notes" class="back-link">← All units</a>
+<div class="page-head">
+  <div class="unit-head">
+    <div class="unit-num-badge big"><%= unit.number %></div>
+    <div>
+      <p class="kicker">Unit <%= unit.number %></p>
+      <h1><%= unit.title %></h1>
+    </div>
+  </div>
+  <p class="muted"><%= unit.description %></p>
+  <div class="card-meta">Updated <%= unit.updatedAt || unit.updated_at %> · <%= unit.parts.length %> part<%= unit.parts.length !== 1 ? 's' : '' %></div>
+</div>
+
+<div class="grid grid-2">
+  <% unit.parts.forEach((p, i) => { %>
+    <a href="#part-<%= p.id %>" class="card card-link">
+      <span class="card-kicker">Part <%= i + 1 %></span>
+      <h3><%= p.title %></h3>
+      <%
+        const firstPara = p.blocks.find(b => b.kind === 'paragraph');
+        if (firstPara) {
+      %>
+        <p class="muted"><%= (firstPara.text || '').slice(0, 140) %>…</p>
+      <% } %>
+    </a>
+  <% }) %>
+</div>
+
+<% unit.parts.forEach((p, i) => { %>
+  <article id="part-<%= p.id %>" class="note-part">
+    <p class="kicker">Part <%= i + 1 %></p>
+    <h2><%= p.title %></h2>
+    <div class="note-content">
+      <% p.blocks.forEach(b => { %>
+        <% if (b.kind === 'heading') { %>
+          <h<%= b.level || 2 %>><%= b.text %></h<%= b.level || 2 %>>
+        <% } else if (b.kind === 'paragraph') { %>
+          <p><%= b.text %></p>
+        <% } else if (b.kind === 'bullet') { %>
+          <ul><% (b.items || []).forEach(it => { %><li><%= it %></li><% }) %></ul>
+        <% } else if (b.kind === 'numbered') { %>
+          <ol><% (b.items || []).forEach(it => { %><li><%= it %></li><% }) %></ol>
+        <% } else if (b.kind === 'image') { %>
+          <figure><img src="<%= b.url %>" alt="<%= b.caption || '' %>" /><% if (b.caption) { %><figcaption><%= b.caption %></figcaption><% } %></figure>
+        <% } else if (b.kind === 'divider') { %>
+          <hr />
+        <% } else if (b.kind === 'callout') { %>
+          <% const calloutIcon = { info: 'info', warning: 'triangle-alert', success: 'check-circle' }[b.variant || 'info'] || 'info'; %>
+          <div class="callout callout-<%= b.variant || 'info' %>">
+            <i data-lucide="<%= calloutIcon %>" class="callout-icon"></i>
+            <span><%= b.text %></span>
+          </div>
+        <% } %>
+      <% }) %>
+    </div>
+  </article>
+<% }) %>

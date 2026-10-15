@@ -1,0 +1,26 @@
+<div class="page-head">
+  <p class="kicker">Our Section</p>
+  <h1>The Biology 2 class</h1>
+  <p class="muted">Click any classmate to view their profile.</p>
+</div>
+
+<% if (adviser) { %>
+  <a href="/profile/<%= adviser.id %>" class="card adviser-card" style="text-decoration:none;color:inherit;">
+    <div class="adviser-avatar" style="--avatar-hue: <%= adviser.avatarColor || 200 %>;"><%= (adviser.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %></div>
+    <div><strong><%= adviser.name %></strong> <span class="badge admin"><%= adviser.role %></span><p class="muted">Biology 2 · Class Adviser</p><% if (adviser.bio) { %><p class="muted small"><%= adviser.bio %></p><% } %></div>
+    <span class="adviser-crown"><i data-lucide="crown"></i></span>
+  </a>
+<% } %>
+
+<p class="muted"><i data-lucide="users" class="inline-icon"></i> <%= students.length %> classmates</p>
+<div class="grid grid-4">
+  <% students.forEach(u => { %>
+    <a href="/profile/<%= u.id %>" class="card center classmate-card <%= u.id === user.id ? 'me' : '' %>" style="text-decoration:none;color:inherit;">
+      <div class="avatar avatar-lg" style="--avatar-hue: <%= u.avatarColor || 200 %>;"><% if (u.avatarUrl) { %><img src="<%= u.avatarUrl %>" alt="<%= u.name %>" /><% } else { %><%= (u.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %><% } %></div>
+      <strong class="block mt"><%= u.name %></strong>
+      <span class="muted small mono">@<%= u.username %></span>
+      <% if (u.id === user.id) { %><span class="badge">you</span><% } else { %><span class="badge"><%= u.role %></span><% } %>
+      <p class="muted small"><i data-lucide="flame" class="inline-icon"></i> <%= u.streakDays %>d · <%= u.points %> pts</p>
+    </a>
+  <% }) %>
+</div>

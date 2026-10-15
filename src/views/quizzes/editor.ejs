@@ -1,0 +1,104 @@
+<div class="page-head">
+  <p class="kicker"><%= kind === 'live' ? 'Live Test Editor' : 'Practice Quiz Editor' %></p>
+  <h1><%= kind === 'live' ? 'Edit the live test' : 'Manage practice quizzes' %></h1>
+  <% if (kind !== 'live') { %>
+    <button class="btn btn-primary" id="new-quiz-btn">+ New quiz</button>
+  <% } %>
+</div>
+
+<div id="quizzes-list">
+  <% quizzes.forEach(q => { %>
+    <div class="card quiz-card" data-quiz-id="<%= q.id %>">
+      <div class="quiz-card-head">
+        <div><h3><%= q.title %></h3><p class="muted"><%= q.description %></p></div>
+        <div class="quiz-actions">
+          <span class="badge"><%= q.items.length %> items</span>
+          <button class="btn btn-sm btn-outline edit-quiz-btn" data-quiz='<%- safeJson({ id: q.id, title: q.title, description: q.description, time_limit_min: q.time_limit_min, deadline: q.deadline, mastery_mode: q.masteryMode }) %>'><i data-lucide="pencil" class="inline-icon"></i> Edit quiz</button>
+          <button class="btn btn-sm btn-outline add-item-btn" data-quiz-id="<%= q.id %>">+ Item</button>
+          <% if (kind !== 'live') { %><button class="icon-btn delete-quiz-btn" data-quiz-id="<%= q.id %>"><i data-lucide="trash-2"></i></button><% } %>
+        </div>
+      </div>
+      <div class="items-list" data-quiz-id="<%= q.id %>">
+        <% q.items.forEach((it, i) => { %>
+          <div class="item-row" data-item-id="<%= it.id %>">
+            <span class="item-idx"><%= i + 1 %></span>
+            <span class="badge"><%= it.type.replace(/_/g, ' ') %></span>
+            <span class="item-q"><%= it.question %></span>
+            <span class="muted small"><%= it.points %>pt<%= it.points !== 1 ? 's' : '' %></span>
+            <div class="item-actions">
+              <button class="icon-btn edit-item-btn" data-item='<%- safeJson(it) %>' data-quiz-id="<%= q.id %>"><i data-lucide="pencil"></i></button>
+              <button class="icon-btn delete-item-btn" data-item-id="<%= it.id %>" data-quiz-id="<%= q.id %>"><i data-lucide="trash-2"></i></button>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<!-- Edit quiz metadata modal -->
+<div id="edit-quiz-modal" class="modal hidden">
+  <div class="modal-content">
+    <header class="modal-head"><h2>Edit quiz</h2><button class="icon-btn" id="eq-close">✕</button></header>
+    <div class="modal-body">
+      <input type="hidden" id="eq-id" />
+      <label>Title</label><input id="eq-title" />
+      <label>Description</label><textarea id="eq-desc" rows="2"></textarea>
+      <div class="grid grid-2">
+        <div><label>Time limit (min)</label><input id="eq-tl" type="number" min="1" max="180" /></div>
+        <div><label>Deadline</label><input id="eq-dl" type="datetime-local" /></div>
+      </div>
+      <!-- v3-P1-4: Mastery mode toggle. When ON, quiz uses spaced-repetition
+           (FSRS) instead of one-shot grading. Existing quizzes default to false. -->
+      <div class="form-row">
+        <label class="toggle-row">
+          <span>
+            <strong>Mastery mode</strong>
+            <div class="muted small">SRS — students review due items, no time limit. Points only on first-correct-per-item-per-day.</div>
+          </span>
+          <input type="checkbox" id="eq-mastery" />
+        </label>
+      </div>
+    </div>
+    <footer class="modal-foot"><button class="btn btn-outline" id="eq-cancel">Cancel</button><button class="btn btn-primary" id="eq-save">Save quiz</button></footer>
+  </div>
+</div>
+
+<!-- Item editor modal -->
+<div id="item-modal" class="modal hidden">
+  <div class="modal-content wide">
+    <header class="modal-head"><h2 id="item-modal-title">New item</h2><button class="icon-btn" id="item-close">✕</button></header>
+    <div class="modal-body">
+      <div class="grid grid-2">
+        <label>Type<select id="item-type">
+          <option value="multiple_choice">Multiple choice</option>
+          <option value="true_false">True / False</option>
+          <option value="identification">Identification</option>
+          <option value="open_ended">Open-ended</option>
+        </select></label>
+        <label>Points<input type="number" id="item-points" min="1" max="10" value="1" /></label>
+      </div>
+      <label>Question</label>
+      <textarea id="item-question" rows="2"></textarea>
+      <label>Image URL (optional, attached to question)</label>
+      <input id="item-image" type="url" />
+      <div id="options-block">
+        <label>Options (click the circle to mark the correct one)</label>
+        <div id="options-list"></div>
+        <button type="button" class="btn btn-sm btn-outline dashed" id="add-option-btn">+ Add option</button>
+      </div>
+      <div id="answer-key-block" class="hidden">
+        <label>Answer key (the answer must contain this phrase, case-insensitive)</label>
+        <input id="item-answer" />
+      </div>
+      <label>Explanation (optional)</label>
+      <textarea id="item-explanation" rows="2"></textarea>
+    </div>
+    <footer class="modal-foot"><button class="btn btn-outline" id="item-cancel">Cancel</button><button class="btn btn-primary" id="item-save">Save item</button></footer>
+  </div>
+</div>
+
+<script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>">
+  window.__QUIZ_KIND__ = '<%= kind || "practice" %>';
+</script>
+<script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>" src="/js/quizzes-editor.js"></script>

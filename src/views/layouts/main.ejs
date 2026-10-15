@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= typeof title !== 'undefined' ? title : 'STEM Tesla BioHub' %> · STEM Tesla BioHub</title>
+  <meta name="description" content="STEM Tesla BioHub — Biology 2 class study hub: notes, practice quizzes, flashcards, live tests, leaderboard." />
+  <meta name="theme-color" content="#0a1228" />
+  <!-- v2-P3-1: Favicon + Open Graph meta tags. -->
+  <link rel="icon" type="image/jpeg" href="/assets/stem-logo.jpeg" />
+  <link rel="apple-touch-icon" href="/assets/stem-logo.jpeg" />
+  <meta property="og:title" content="DNHS STEM Tesla Hub — Biology 2" />
+  <meta property="og:description" content="Notes, practice quizzes, flashcards, live tests, leaderboard for the Tesla STEM Biology 2 class at Dangcagan National High School." />
+  <meta property="og:image" content="/assets/stem-logo.jpeg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="DNHS STEM Tesla Hub — Biology 2" />
+  <meta name="twitter:description" content="Class study hub for Tesla STEM Biology 2 at Dangcagan National High School." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <!-- v2-P1-1: CSRF token for client-side fetch — auto-attached by app.js. -->
+  <meta name="csrf-token" content="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>" />
+  <!-- v2-P2-2: Lucide SVG icons — replaces emojis throughout the UI. -->
+  <script src="/js/lucide.min.js" defer></script>
+</head>
+<body class="<%= locals.user ? 'app-body' : 'guest-body' %>">
+  <% if (locals.user) { %>
+    <%- include('../partials/sidebar') %>
+    <main class="app-main">
+      <header class="app-topbar">
+        <button class="icon-btn mobile-only" id="menu-toggle" aria-label="Menu">☰</button>
+        <h1 class="page-title"><%= typeof title !== 'undefined' ? title : 'Dashboard' %></h1>
+        <div class="topbar-right">
+          <% if (locals.activeSession) { %>
+            <span class="live-pill"><span class="dot"></span> Live: <%= activeSession.quizzes && activeSession.quizzes.title ? activeSession.quizzes.title : 'test' %></span>
+          <% } %>
+          <div class="user-chip">
+            <div class="avatar avatar-sm" style="--avatar-hue: <%= user.avatar_color || 200 %>;">
+              <%= (user.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %>
+            </div>
+            <span class="user-name"><%= user.name.split(' ')[0] %></span>
+          </div>
+        </div>
+      </header>
+      <div class="page-content">
+        <%- body %>
+      </div>
+      <%- include('../partials/footer') %>
+    </main>
+  <% } else { %>
+    <%- body %>
+  <% } %>
+  <!--
+    v3-P3-9: Socket.IO CDN removed from main layout — was being loaded on every
+    page even though only live-test/take.ejs, admin/live-monitor.ejs, and
+    admin/host-live.ejs actually use Socket.IO. Each of those views now loads
+    the CDN itself at the top of its inline <script> block. Saves ~50KB per
+    page load on /notes, /profile, /practice, /flashcards, /leaderboard, etc.
+  -->
+  <script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>" src="/js/app.js"></script>
+  <%- typeof extraScripts !== 'undefined' ? extraScripts : '' %>
+</body>
+</html>

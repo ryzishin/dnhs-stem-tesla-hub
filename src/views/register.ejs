@@ -1,0 +1,36 @@
+<div class="auth-page">
+  <a href="/" class="back-link">← Back to home</a>
+  <div class="auth-card">
+    <div class="auth-head">
+      <img src="/assets/stem-logo.jpeg" alt="STEM logo" class="auth-logo" />
+      <h1>Create account</h1>
+      <p class="muted">Pick a username and display name.</p>
+    </div>
+
+    <% if (locals.isFirstUser) { %>
+      <div class="alert alert-info">
+        This will be the first account — you'll be the administrator.
+      </div>
+    <% } %>
+
+    <% if (locals.error) { %>
+      <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <form method="post" action="/register" class="auth-form" data-loading data-loading-text="Creating account…">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <label>Username</label>
+      <input type="text" name="username" required minlength="3" maxlength="20" placeholder="althea" autocomplete="username" />
+      <p class="muted small">3–20 characters. Letters, digits, _, ., -</p>
+      <label>Display name</label>
+      <input type="text" name="name" required placeholder="Althea Reyes" autocomplete="name" />
+      <p class="muted small">Shown on your profile and the leaderboard. Changeable anytime.</p>
+      <label>Password</label>
+      <input type="password" name="password" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password" />
+      <label>Confirm password</label>
+      <input type="password" name="confirm" required placeholder="Re-type password" autocomplete="new-password" />
+      <button type="submit" class="btn btn-primary w-full">Create account</button>
+      <p class="form-hint">Already have an account? <a href="/login">Sign in</a></p>
+    </form>
+  </div>
+</div>

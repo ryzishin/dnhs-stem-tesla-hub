@@ -1,0 +1,99 @@
+<div class="result-page">
+  <div class="result-header">
+    <div class="result-score <%= score === total ? 'perfect' : (score >= total / 2 ? 'pass' : 'fail') %>">
+      <span class="score-number"><%= score %></span>
+      <span class="score-divider">/</span>
+      <span class="score-total"><%= total %></span>
+    </div>
+    <p class="result-label">
+      <% if (isMastery) { %>Mastery session complete<% } else { %>Quiz complete<% } %>
+    </p>
+    <% if (!isMastery && typeof attempt !== 'undefined' && attempt) { %>
+      <p class="muted small">You earned <strong>+<%= 5 + score %></strong> points toward the leaderboard.</p>
+    <% } else if (isMastery) { %>
+      <p class="muted small">Points awarded for first-correct-per-item-today.</p>
+    <% } %>
+  </div>
+
+  <% if (isMastery && typeof masteryStats !== 'undefined' && masteryStats) { %>
+    <div class="mastery-progress">
+      <h3>Mastery progress on this quiz</h3>
+      <% const totalForBar = masteryStats.total || 1; %>
+      <div class="mastery-bars">
+        <% if (masteryStats.mastered > 0) { %>
+          <div class="bar bar-mastered" style="width: <%= (masteryStats.mastered / totalForBar) * 100 %>%">
+            <%= masteryStats.mastered %> mastered
+          </div>
+        <% } %>
+        <% if (masteryStats.young > 0) { %>
+          <div class="bar bar-young" style="width: <%= (masteryStats.young / totalForBar) * 100 %>%">
+            <%= masteryStats.young %> young
+          </div>
+        <% } %>
+        <% if (masteryStats.learning > 0) { %>
+          <div class="bar bar-learning" style="width: <%= (masteryStats.learning / totalForBar) * 100 %>%">
+            <%= masteryStats.learning %> learning
+          </div>
+        <% } %>
+        <% if (masteryStats.new > 0) { %>
+          <div class="bar bar-new" style="width: <%= (masteryStats.new / totalForBar) * 100 %>%">
+            <%= masteryStats.new %> new
+          </div>
+        <% } %>
+      </div>
+      <p class="muted small">Total items: <%= masteryStats.total %>. Re-take this quiz to keep advancing.</p>
+    </div>
+  <% } %>
+
+  <% if (typeof itemResults !== 'undefined' && itemResults && itemResults.length) { %>
+    <div class="item-breakdown">
+      <h3>Item breakdown</h3>
+      <% itemResults.forEach((r, i) => { %>
+        <div class="card review-item <%= r.correct ? 'review-correct' : 'review-wrong' %>">
+          <div class="review-head">
+            <span class="badge"><%= (r.item.type || '').replace(/_/g, ' ') %></span>
+            <span class="badge <%= r.correct ? 'pass' : 'fail' %>">
+              <i data-lucide="<%= r.correct ? 'check' : 'x' %>" class="inline-icon"></i>
+              <%= r.correct ? 'Correct' : 'Wrong' %>
+            </span>
+            <% if (r.item.points) { %>
+              <span class="muted small"><%= r.item.points %> pt<%= r.item.points !== 1 ? 's' : '' %></span>
+            <% } %>
+            <% if (isMastery && r.reviewState) { %>
+              <span class="badge"><%= r.reviewState.masteryBucket %></span>
+              <span class="muted small">Next due: <%= r.reviewState.nextDueAt ? new Date(r.reviewState.nextDueAt).toLocaleDateString() : 'soon' %></span>
+            <% } %>
+          </div>
+          <h3 class="review-q"><%= (i + 1) + '. ' + (r.item.question || '') %></h3>
+          <% if (r.item.image_url || r.item.imageUrl) { %>
+            <img src="<%= r.item.image_url || r.item.imageUrl %>" alt="" class="quiz-img" />
+          <% } %>
+          <div class="review-answer-row">
+            <p><strong>Your answer:</strong>
+              <span class="<%= r.correct ? 'correct-text' : 'wrong-text' %>"><%= r.userAnswer || '(blank)' %></span>
+            </p>
+            <% if (!r.correct) { %>
+              <p><strong>Correct answer:</strong>
+                <span class="correct-text"><%= r.correctAnswer %></span>
+              </p>
+            <% } %>
+          </div>
+          <% if (r.item.explanation) { %>
+            <div class="callout info"><strong>Why:</strong> <%= r.item.explanation %></div>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  <% } else if (typeof responses !== 'undefined' && responses && responses.length === 0) { %>
+    <p class="muted">This attempt predates per-item tracking. Take the quiz again to see a breakdown.</p>
+  <% } %>
+
+  <div class="cta-row">
+    <% if (isMastery) { %>
+      <a href="/practice/<%= quiz.id %>" class="btn btn-primary">Continue studying</a>
+    <% } else { %>
+      <a href="/practice/<%= quiz.id %>" class="btn btn-primary">Try again</a>
+    <% } %>
+    <a href="/practice" class="btn btn-outline">Back to quizzes</a>
+  </div>
+</div>

@@ -1,0 +1,87 @@
+<div class="page-head">
+  <p class="kicker admin">Settings</p>
+  <h1>Anti-cheat & test config</h1>
+</div>
+
+<form id="settings-form">
+  <div class="card">
+    <h3>Anti-cheat</h3>
+    <p class="muted">Enforced on every student device while the live test is active.</p>
+    <% const ac = settings.antiCheat || settings.anti_cheat || {}; %>
+    <label class="toggle-row"><span><strong>Block tab switching</strong><div class="muted small">Detect when the student leaves the test tab.</div></span><input type="checkbox" name="blockTabSwitch" <%= ac.blockTabSwitch ? 'checked' : '' %> /></label>
+    <label class="toggle-row"><span><strong>Require fullscreen</strong><div class="muted small">Force fullscreen until the test is submitted.</div></span><input type="checkbox" name="requireFullscreen" <%= ac.requireFullscreen ? 'checked' : '' %> /></label>
+    <label class="toggle-row"><span><strong>Block copy / cut / paste</strong><div class="muted small">Disable clipboard during the test.</div></span><input type="checkbox" name="blockCopy" <%= ac.blockCopy ? 'checked' : '' %> /></label>
+    <label class="toggle-row"><span><strong>Block right-click</strong><div class="muted small">Disable the browser context menu.</div></span><input type="checkbox" name="blockRightClick" <%= ac.blockRightClick ? 'checked' : '' %> /></label>
+    <label>Max warnings before auto-submit</label>
+    <input type="number" name="maxWarnings" min="1" max="10" value="<%= ac.maxWarnings || 3 %>" class="small-input" />
+  </div>
+
+  <div class="card">
+    <h3>Test timing</h3>
+    <label>Live quiz</label>
+    <select name="quiz_id">
+      <% (liveQuizzes || []).forEach(q => { %><option value="<%= q.id %>"><%= q.title %></option><% }) %>
+    </select>
+    <label>Time limit (minutes)</label>
+    <input type="number" name="time_limit_min" min="1" max="180" value="<%= (liveQuizzes[0] && (liveQuizzes[0].timeLimitMin || liveQuizzes[0].time_limit_min)) || 30 %>" />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Save settings</button>
+</form>
+
+<!-- Manage roles -->
+<div class="card">
+  <h3>Manage roles</h3>
+  <p class="muted">Promote or demote users. Students can become moderators; moderators can become administrators.</p>
+  <div class="participant-list">
+    <% (users || []).forEach(u => { %>
+      <div class="participant-row" data-user-id="<%= u.id %>">
+        <div class="avatar avatar-sm" style="--avatar-hue: <%= u.avatarColor || 200 %>;"><% if (u.avatarUrl) { %><img src="<%= u.avatarUrl %>" alt="<%= u.name %>" /><% } else { %><%= (u.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %><% } %></div>
+        <div class="flex-1"><strong><%= u.name %></strong><div class="muted small">@<%= u.username %> · <%= u.role %></div></div>
+        <div class="role-actions">
+          <% if (u.role === 'student') { %>
+            <button class="btn btn-sm btn-outline promote-btn" data-user-id="<%= u.id %>" data-role="moderator">Promote to moderator</button>
+          <% } else if (u.role === 'moderator') { %>
+            <button class="btn btn-sm btn-outline promote-btn" data-user-id="<%= u.id %>" data-role="administrator">Promote to admin</button>
+            <button class="btn btn-sm btn-outline demote-btn" data-user-id="<%= u.id %>" data-role="student">Demote to student</button>
+          <% } else if (u.role === 'administrator') { %>
+            <button class="btn btn-sm btn-outline demote-btn" data-user-id="<%= u.id %>" data-role="moderator">Demote to moderator</button>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>">
+  document.getElementById('settings-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const body = {
+      anti_cheat: {
+        blockTabSwitch: f.blockTabSwitch.checked,
+        requireFullscreen: f.requireFullscreen.checked,
+        blockCopy: f.blockCopy.checked,
+        blockRightClick: f.blockRightClick.checked,
+        maxWarnings: Number(f.maxWarnings.value)
+      },
+      time_limit_min: Number(f.time_limit_min.value),
+      quiz_id: f.quiz_id.value
+    };
+    const r = await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (r.ok) alert('Settings saved.');
+  });
+
+  document.querySelectorAll('.promote-btn, .demote-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const userId = btn.dataset.userId;
+      const role = btn.dataset.role;
+      const r = await fetch('/api/admin/promote', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, role }),
+      });
+      if (r.ok) location.reload();
+      else { const d = await r.json(); alert(d.error || 'Failed'); }
+    });
+  });
+</script>

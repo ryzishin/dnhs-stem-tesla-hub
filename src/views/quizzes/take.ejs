@@ -1,0 +1,135 @@
+<a href="/practice" class="back-link">← Back to quizzes</a>
+<form method="post" action="/practice/<%= quiz.id %>/submit" id="quiz-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <input type="hidden" name="durationSec" id="duration-input" value="0" />
+  <div class="quiz-progress">
+    <span>Item <span id="cur-idx">1</span> of <%= items.length %></span>
+    <% if (typeof isMastery !== 'undefined' && !isMastery && quiz.timeLimitMin) { %>
+      <span class="muted small">Time left: <span id="quiz-timer"><%= quiz.timeLimitMin %>:00</span></span>
+    <% } %>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <% items.forEach((it, i) => { %>
+    <div class="quiz-item" data-item-id="<%= it.id %>" style="display: <%= i === 0 ? 'block' : 'none' %>">
+      <div class="quiz-item-head">
+        <span class="badge"><%= it.type.replace(/_/g, ' ') %></span>
+        <span class="muted"><%= it.points %> pt<%= it.points !== 1 ? 's' : '' %></span>
+      </div>
+      <h2 class="quiz-q"><%= it.question %></h2>
+      <% if (it.image_url) { %>
+        <img src="<%= it.image_url %>" alt="" class="quiz-img" />
+      <% } %>
+
+      <% if (it.type === 'multiple_choice' || it.type === 'true_false') { %>
+        <div class="option-list">
+          <% (it.options || []).forEach(o => { %>
+            <label class="option-row">
+              <input type="radio" name="answers[<%= it.id %>]" value="<%= o.id %>" required />
+              <span><%= o.text %></span>
+              <% if (o.image_url) { %><img src="<%= o.image_url %>" alt="" class="option-img" /><% } %>
+            </label>
+          <% }) %>
+        </div>
+      <% } else if (it.type === 'identification') { %>
+        <input type="text" name="answers[<%= it.id %>]" placeholder="Type your answer…" class="text-input" required />
+      <% } else if (it.type === 'open_ended') { %>
+        <textarea name="answers[<%= it.id %>]" placeholder="Write your answer…" rows="4" class="text-input" required></textarea>
+      <% } %>
+
+      <div class="quiz-nav">
+        <% if (i > 0) { %><button type="button" class="btn btn-outline prev-btn">Previous</button><% } %>
+        <% if (i < items.length - 1) { %>
+          <button type="button" class="btn btn-primary next-btn">Next</button>
+        <% } else { %>
+          <button type="submit" class="btn btn-primary">Submit answers</button>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</form>
+
+<script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>">
+  (function() {
+    const items = document.querySelectorAll('.quiz-item');
+    const curIdx = document.getElementById('cur-idx');
+    const progressFill = document.getElementById('progress-fill');
+    let idx = 0;
+    function show(i) {
+      items.forEach((it, j) => it.style.display = j === i ? 'block' : 'none');
+      curIdx.textContent = i + 1;
+      progressFill.style.width = ((i + 1) / items.length * 100) + '%';
+    }
+    document.querySelectorAll('.next-btn').forEach(b => b.addEventListener('click', () => { if (idx < items.length - 1) { idx++; show(idx); } }));
+    document.querySelectorAll('.prev-btn').forEach(b => b.addEventListener('click', () => { if (idx > 0) { idx--; show(idx); } }));
+    const start = Date.now();
+    setInterval(() => { document.getElementById('duration-input').value = Math.round((Date.now() - start) / 1000); }, 1000);
+
+    // v3-P2-4: Time limit enforcement (non-mastery quizzes only).
+    // Mastery quizzes ignore time limits per spec D2 — they're for spaced review, not timed assessment.
+    <% if (typeof isMastery !== 'undefined' && !isMastery && quiz.timeLimitMin) { %>
+      const TIME_LIMIT_SEC = <%= quiz.timeLimitMin * 60 %>;
+      let timeRemaining = TIME_LIMIT_SEC;
+      const timerEl = document.getElementById('quiz-timer');
+      const timerInterval = setInterval(() => {
+        timeRemaining--;
+        if (timerEl) {
+          const mins = Math.floor(timeRemaining / 60);
+          const secs = timeRemaining % 60;
+          timerEl.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+          if (timeRemaining <= 60) timerEl.classList.add('timer-warning');
+        }
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          alert('Time is up. Submitting your quiz.');
+          document.getElementById('quiz-form').requestSubmit();
+        }
+      }, 1000);
+    <% } %>
+
+    // v3-P2-5: Save/restore answers via sessionStorage so a mid-quiz refresh doesn't lose work.
+    const STORAGE_KEY = `quiz-<%= quiz.id %>-answers`;
+
+    function saveAnswers() {
+      const answers = {};
+      document.querySelectorAll('input[name^="answers"]').forEach(input => {
+        // For radio: only save the checked one. For text/textarea: save the value.
+        const match = input.name.match(/answers\[(.+)\]/);
+        const key = match ? match[1] : input.name;
+        if (input.type === 'radio') {
+          if (input.checked) answers[key] = input.value;
+        } else {
+          answers[key] = input.value;
+        }
+      });
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+    }
+
+    function restoreAnswers() {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
+      let answers;
+      try { answers = JSON.parse(saved); } catch { return; }
+      Object.entries(answers).forEach(([key, value]) => {
+        const radios = document.querySelectorAll(`input[name="answers[${key}]"]`);
+        if (radios.length > 0) {
+          // Multiple-choice / true-false
+          radios.forEach(r => { if (r.value === value) r.checked = true; });
+        } else {
+          // Text / textarea
+          const inp = document.querySelector(`input[name="answers[${key}]"], textarea[name="answers[${key}]"]`);
+          if (inp) inp.value = value;
+        }
+      });
+    }
+
+    document.addEventListener('input', saveAnswers);
+    document.addEventListener('change', saveAnswers);
+    restoreAnswers();
+
+    // Clear on successful submit so a re-take of the same quiz starts fresh.
+    document.getElementById('quiz-form')?.addEventListener('submit', () => {
+      sessionStorage.removeItem(STORAGE_KEY);
+    });
+  })();
+</script>

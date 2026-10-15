@@ -1,0 +1,32 @@
+<div class="auth-page">
+  <a href="/" class="back-link">← Back to home</a>
+  <div class="auth-card">
+    <div class="auth-head">
+      <img src="/assets/stem-logo.jpeg" alt="STEM logo" class="auth-logo" />
+      <h1>Sign in</h1>
+      <p class="muted">Use your username and password.</p>
+    </div>
+
+    <% if (locals.success) { %>
+      <div class="alert alert-info"><%= success %></div>
+    <% } %>
+
+    <% if (locals.error) { %>
+      <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <form method="post" action="/login" class="auth-form" data-loading data-loading-text="Signing in…">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <label>Username</label>
+      <input type="text" name="username" placeholder="althea" required autocomplete="username" />
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password" />
+      <button type="submit" class="btn btn-primary w-full">Sign in</button>
+      <p class="form-hint">
+        No account yet? <a href="/register">Register</a>
+        <br />
+        <a href="/forgot-password">Forgot password?</a>
+      </p>
+    </form>
+  </div>
+</div>

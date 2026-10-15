@@ -1,0 +1,39 @@
+<div class="page-head">
+  <p class="kicker admin">Live Test History</p>
+  <h1>Past test results</h1>
+  <p class="muted">Score tracking and history records of every live test session.</p>
+</div>
+
+<% if (history.length === 0) { %>
+  <div class="card center">
+    <p class="muted">No live tests have been completed yet.</p>
+    <p class="muted small">Host a live test and end it to see results here.</p>
+  </div>
+<% } else { %>
+  <% history.forEach(r => { %>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h3><%= r.quizTitle %></h3>
+          <p class="muted small"><%= new Date(r.endedAt).toLocaleString() %> · <%= r.participantCount %> participants · <%= r.totalPossible %> pts possible</p>
+        </div>
+        <div class="card-actions">
+          <!-- v3-P2-9: CSV export of session results. -->
+          <a href="/api/admin/sessions/<%= r.id %>/export" class="btn btn-sm btn-outline" download>
+            <i data-lucide="download" class="inline-icon"></i> Export CSV
+          </a>
+          <span class="badge admin">Ended</span>
+        </div>
+      </div>
+      <div class="participant-list">
+        <% r.participants.forEach((p, i) => { %>
+          <div class="participant-row">
+            <span class="rank">#<%= i + 1 %></span>
+            <div class="flex-1"><strong><%= p.name %></strong><% if (p.warnings > 0) { %> <span class="badge warn">⚠ <%= p.warnings %></span><% } %></div>
+            <div class="leader-score"><%= p.score %>/<%= r.totalPossible %></div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  <% }) %>
+<% } %>

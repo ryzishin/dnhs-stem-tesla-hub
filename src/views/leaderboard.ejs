@@ -1,0 +1,41 @@
+<div class="page-head">
+  <p class="kicker">Leaderboard</p>
+  <h1>Top of the class</h1>
+  <p class="muted">Points from practice quizzes & flashcards only. Live test scores are excluded. Click a classmate to view their profile.</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="weekly"><i data-lucide="calendar"></i> Weekly</button>
+  <button class="tab" data-tab="alltime"><i data-lucide="trophy"></i> All-time</button>
+</div>
+
+<div id="weekly" class="leaderboard-list">
+  <% weekly.forEach(u => { %>
+    <a href="/profile/<%= u.id %>" class="leader-row <%= u.id === user.id ? 'me' : '' %>" style="text-decoration:none;color:inherit;">
+      <span class="rank">#<%= u.rank %></span>
+      <div class="avatar avatar-sm" style="--avatar-hue: <%= u.avatarColor || 200 %>;"><%= (u.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %></div>
+      <div class="leader-info"><strong><%= u.name %></strong> <% if (u.id === user.id) { %><span class="badge">you</span><% } %><div class="muted small"><i data-lucide="flame" class="inline-icon"></i> <%= u.streakDays %>d streak</div></div>
+      <div class="leader-score"><%= u.weeklyPoints %><div class="muted small">pts</div></div>
+    </a>
+  <% }) %>
+</div>
+
+<div id="alltime" class="leaderboard-list hidden">
+  <% alltime.forEach(u => { %>
+    <a href="/profile/<%= u.id %>" class="leader-row <%= u.id === user.id ? 'me' : '' %>" style="text-decoration:none;color:inherit;">
+      <span class="rank">#<%= u.rank %></span>
+      <div class="avatar avatar-sm" style="--avatar-hue: <%= u.avatarColor || 200 %>;"><%= (u.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %></div>
+      <div class="leader-info"><strong><%= u.name %></strong> <% if (u.id === user.id) { %><span class="badge">you</span><% } %><div class="muted small"><i data-lucide="flame" class="inline-icon"></i> <%= u.streakDays %>d streak</div></div>
+      <div class="leader-score"><%= u.points %><div class="muted small">pts</div></div>
+    </a>
+  <% }) %>
+</div>
+
+<script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>">
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('.leaderboard-list').forEach(l => l.classList.add('hidden'));
+    document.getElementById(t.dataset.tab).classList.remove('hidden');
+  }));
+</script>

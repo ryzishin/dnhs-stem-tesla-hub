@@ -1,0 +1,173 @@
+<div id="live-test-root">
+  <div class="live-test-head">
+    <span class="live-pulse"></span>
+    <strong>Live test</strong>
+    <span class="muted small" id="timer">Loading…</span>
+    <span class="badge warn hidden" id="warning-badge"><i data-lucide="triangle-alert" class="inline-icon"></i> <span id="warning-count">0</span></span>
+  </div>
+  <div id="quiz-container" class="card">
+    <p class="muted center">Connecting to live session…</p>
+  </div>
+</div>
+
+<script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>" src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>">
+  // P0-1 + P1-4: Single persistent socket (server reads userId from session cookie).
+  // No polling — the client subscribes to live:item_changed / live:ended via Socket.IO.
+  // Client sends only { sessionId, itemId, answer } — never score.
+  const socket = io();
+  let session = null;
+
+  // v3-P2-3: Request fullscreen when the admin setting is on.
+  // We fetch the setting via a new endpoint since the take page doesn't
+  // currently know the settings state. Fail silently if fullscreen is denied —
+  // don't block the test, just log a warning.
+  async function applyFullscreenIfRequired() {
+    try {
+      const r = await fetch('/api/live-test/settings').then(r => r.json()).catch(() => null);
+      if (r && r.requireFullscreen) {
+        try { await document.documentElement.requestFullscreen?.(); } catch (e) {
+          console.warn('[fullscreen] request failed:', e.message);
+        }
+      }
+    } catch (err) {
+      console.warn('[fullscreen] settings fetch failed:', err.message);
+    }
+  }
+
+  // v3-P2-3: Listen for fullscreen change — if user exits fullscreen during the test, warn.
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && session) {
+      socket.emit('live:anti_cheat_warning', { sessionId: session.id, reason: 'Exited fullscreen' });
+    }
+  });
+
+  async function loadSession() {
+    const r = await fetch('/api/live-test/current').then(r => r.json()).catch(() => null);
+    if (!r || !r.session) {
+      document.getElementById('quiz-container').innerHTML =
+        '<p class="muted center">No active live test right now. Check back when your adviser starts one.</p>';
+      session = null;
+      return;
+    }
+    session = r.session;
+    socket.emit('live:join', { sessionId: session.id });
+    // v3-P2-3: Apply fullscreen now that we have an active session.
+    applyFullscreenIfRequired();
+    render();
+  }
+
+  function render() {
+    if (!session) return;
+    const items = session.quiz.items || [];
+    const idx = session.current_item_index;
+    const it = items[idx];
+    if (!it) return;
+    const c = document.getElementById('quiz-container');
+    c.innerHTML = `
+      <div class="quiz-item-head"><span class="badge">${it.type.replace(/_/g, ' ')}</span><span class="muted">${it.points} pts</span></div>
+      <h2 class="quiz-q">${it.question}</h2>
+      ${it.image_url ? `<img src="${it.image_url}" class="quiz-img" />` : ''}
+      ${renderAnswer(it)}
+      <div class="quiz-nav"><button class="btn btn-primary" id="submit-answer">Submit answer</button></div>
+    `;
+    document.getElementById('submit-answer')?.addEventListener('click', () => submitAnswer(it));
+  }
+
+  function renderAnswer(it) {
+    if (it.type === 'multiple_choice' || it.type === 'true_false') {
+      return `<div class="option-list">${it.options.map(o => `
+        <label class="option-row"><input type="radio" name="ans" value="${o.id}" /><span>${o.text}</span>${o.image_url ? `<img src="${o.image_url}" class="option-img" />` : ''}</label>
+      `).join('')}</div>`;
+    }
+    if (it.type === 'identification') return `<input type="text" id="ans-input" class="text-input" placeholder="Type your answer…" />`;
+    return `<textarea id="ans-input" class="text-input" rows="4" placeholder="Write your answer…"></textarea>`;
+  }
+
+  // P0-1: Client sends answer only — server computes score.
+  async function submitAnswer(it) {
+    let answer = '';
+    if (it.type === 'multiple_choice' || it.type === 'true_false') {
+      const sel = document.querySelector('input[name="ans"]:checked');
+      if (!sel) return alert('Pick an answer first.');
+      answer = sel.value;
+    } else {
+      const v = document.getElementById('ans-input').value;
+      if (!v.trim()) return alert('Type your answer.');
+      answer = v;
+    }
+    socket.emit('live:submit', { sessionId: session.id, itemId: it.id, answer });
+    document.getElementById('quiz-container').innerHTML =
+      '<p class="muted center">✓ Answer submitted. Waiting for the next item…</p>';
+  }
+
+  // P1-4: Subscribe to socket events instead of polling.
+  socket.on('live:item_changed', ({ itemIndex }) => {
+    if (!session) return;
+    session.current_item_index = itemIndex;
+    render();
+  });
+
+  socket.on('live:ended', () => {
+    session = null;
+    document.getElementById('quiz-container').innerHTML =
+      '<p class="muted center">The live test has ended. Your answers have been submitted.</p>';
+  });
+
+  socket.on('live:auto_submitted', ({ reason }) => {
+    alert(reason);
+    session = null;
+    document.getElementById('quiz-container').innerHTML =
+      '<p class="muted center">Your test was auto-submitted due to anti-cheat warnings.</p>';
+  });
+
+  socket.on('live:warning', ({ warnings, max, reason }) => {
+    const badge = document.getElementById('warning-badge');
+    badge.classList.remove('hidden');
+    document.getElementById('warning-count').textContent = warnings;
+    toast(`Anti-cheat warning ${warnings}/${max}: ${reason}`, 'error');
+  });
+
+  socket.on('live:submission_ack', ({ itemId, score }) => {
+    toast(`Answer recorded (+${score} pts)`, 'success');
+  });
+
+  socket.on('live:error', ({ message }) => {
+    toast(message, 'error');
+  });
+
+  // Anti-cheat listeners — fire only while a session is active.
+  // P1-4 fix: After session ends, `session` is null and these short-circuit.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && session) {
+      socket.emit('live:anti_cheat_warning', { sessionId: session.id, reason: 'Tab switched' });
+    }
+  });
+  document.addEventListener('copy', (e) => {
+    if (session) { e.preventDefault(); alert('Copying is disabled during the live test.'); }
+  });
+  document.addEventListener('contextmenu', (e) => {
+    if (session) e.preventDefault();
+  });
+
+  // Initial load. No setInterval polling — socket events handle updates.
+  loadSession();
+
+  // v3-P2-8: On socket reconnect, re-join the session and fetch current state.
+  // Socket.IO auto-reconnects by default — this handler fires when the
+  // transport comes back up.
+  socket.on('connect', () => {
+    if (session) {
+      socket.emit('live:join', { sessionId: session.id });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    // Show a toast so the student knows they're offline. Socket.IO will keep retrying.
+    if (typeof toast === 'function') {
+      toast('Connection lost. Reconnecting…', 'warning');
+    } else {
+      console.warn('[socket] disconnected — auto-reconnect in progress');
+    }
+  });
+</script>

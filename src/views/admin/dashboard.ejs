@@ -1,0 +1,73 @@
+<div class="page-head">
+  <p class="kicker admin">Admin Dashboard</p>
+  <h1>Welcome back, <%= user.name.split(' ')[0] %></h1>
+  <p class="muted">Monitor the class, host a live test, edit content, and configure settings — all from here.</p>
+</div>
+
+<div class="stat-row">
+  <a href="/classmates" class="stat-card stat-link">
+    <i data-lucide="users" class="stat-icon"></i>
+    <div>
+      <div class="stat-val"><%= studentCount || 0 %></div>
+      <div class="stat-label">Students</div>
+    </div>
+  </a>
+  <div class="stat-card">
+    <i data-lucide="clipboard-list" class="stat-icon"></i>
+    <div>
+      <div class="stat-val"><%= quizCount || 0 %></div>
+      <div class="stat-label">Quizzes</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <i data-lucide="layers" class="stat-icon"></i>
+    <div>
+      <div class="stat-val"><%= cardCount || 0 %></div>
+      <div class="stat-label">Flashcards</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <i data-lucide="<%= activeSession ? 'radio' : 'circle-slash' %>" class="stat-icon <%= activeSession ? 'live' : '' %>"></i>
+    <div>
+      <div class="stat-val"><%= activeSession ? 'Live' : 'Idle' %></div>
+      <div class="stat-label">Live status</div>
+    </div>
+  </div>
+</div>
+
+<% if (activeSession) { %>
+  <div class="card live-banner">
+    <span class="live-pulse"></span>
+    <div><strong>Live now:</strong> <%= activeSession.quizzes && activeSession.quizzes.title %><div class="muted small">Item <%= activeSession.current_item_index + 1 %></div></div>
+    <a href="/admin/host-live" class="btn btn-primary">Open host panel</a>
+  </div>
+<% } else { %>
+  <div class="card">
+    <strong>No active session</strong>
+    <p class="muted">Start a live test from the host panel.</p>
+    <a href="/admin/host-live" class="btn btn-primary">Host live test</a>
+  </div>
+<% } %>
+
+<div class="grid grid-3">
+  <a href="/admin/live-monitor" class="card card-link"><div class="card-icon"><i data-lucide="radio"></i></div><h3>Live Monitor</h3><p class="muted">Real-time activity & scores</p></a>
+  <a href="/moderator/notes" class="card card-link"><div class="card-icon"><i data-lucide="pencil-line"></i></div><h3>Edit Notes</h3><p class="muted">Add units, parts, blocks</p></a>
+  <a href="/admin/live-editor" class="card card-link"><div class="card-icon"><i data-lucide="file-text"></i></div><h3>Edit Live Test</h3><p class="muted">Configure test items</p></a>
+  <a href="/moderator/practice" class="card card-link"><div class="card-icon"><i data-lucide="clipboard-list"></i></div><h3>Edit Practice</h3><p class="muted">Manage practice quizzes</p></a>
+  <a href="/moderator/flashcards" class="card card-link"><div class="card-icon"><i data-lucide="layers"></i></div><h3>Edit Flashcards</h3><p class="muted">Add or edit review cards</p></a>
+  <a href="/admin/settings" class="card card-link"><div class="card-icon"><i data-lucide="settings"></i></div><h3>Settings</h3><p class="muted">Anti-cheat, deadlines, points</p></a>
+</div>
+
+<div class="card">
+  <h3>Recent class activity</h3>
+  <div class="activity-list">
+    <% activity.forEach(ev => { %>
+      <div class="activity-row">
+        <span class="activity-kind kind-<%= ev.kind %>"><%= ev.kind.replace(/_/g, ' ') %></span>
+        <strong><%= ev.userName || ev.user_name %></strong>
+        <span class="muted"><%= ev.detail %></span>
+        <span class="muted small"><%= new Date(ev.createdAt || ev.created_at).toLocaleString() %></span>
+      </div>
+    <% }) %>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="page-head">
+  <p class="kicker">Notes Editor</p>
+  <h1>Manage notes & units</h1>
+  <p class="muted">Add units and parts. Each part is built from dynamic content blocks.</p>
+</div>
+
+<div class="cta-row">
+  <button class="btn btn-primary" id="new-unit-btn">+ New unit</button>
+</div>
+
+<div id="units-list" class="unit-list">
+  <% units.forEach(u => { %>
+    <div class="unit-card" data-unit-id="<%= u.id %>">
+      <div class="unit-card-head">
+        <div class="unit-num-badge"><%= u.number %></div>
+        <div class="unit-card-meta">
+          <span class="card-kicker">Unit <%= u.number %></span>
+          <h3><%= u.title %></h3>
+          <p class="muted"><%= u.description %></p>
+        </div>
+        <div class="unit-card-actions">
+          <button class="btn btn-sm btn-outline edit-unit-btn" data-unit='<%- safeJson({ id: u.id, number: u.number, title: u.title, description: u.description }) %>'>Edit unit</button>
+          <button class="btn btn-sm btn-outline add-part-btn" data-unit-id="<%= u.id %>">+ Part</button>
+          <button class="icon-btn delete-unit-btn" data-unit-id="<%= u.id %>" title="Delete unit">×</button>
+        </div>
+      </div>
+      <div class="parts-list" data-unit-id="<%= u.id %>">
+        <% u.parts.forEach((p, i) => { %>
+          <div class="part-row" data-part-id="<%= p.id %>">
+            <span class="part-idx"><%= i + 1 %></span>
+            <a href="#" class="edit-part-link" data-part-id="<%= p.id %>" data-unit-id="<%= u.id %>"><%= p.title %></a>
+            <span class="muted"><%= p.blocks.length %> blocks</span>
+            <button class="icon-btn edit-part-btn" data-part-id="<%= p.id %>" data-unit-id="<%= u.id %>" title="Edit part">Edit</button>
+            <button class="icon-btn delete-part-btn" data-part-id="<%= p.id %>" title="Delete part">×</button>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<!-- Editor dialog -->
+<div id="editor-modal" class="modal hidden">
+  <div class="modal-content">
+    <header class="modal-head">
+      <h2 id="editor-title">Edit part</h2>
+      <button class="icon-btn" id="editor-close">×</button>
+    </header>
+    <div class="modal-body">
+      <label>Part title</label>
+      <input type="text" id="part-title" />
+      <div class="blocks-editor" id="blocks-editor"></div>
+      <button class="btn btn-outline btn-sm dashed w-full" id="add-block-btn">+ Add content block</button>
+    </div>
+    <footer class="modal-foot">
+      <button class="btn btn-outline" id="editor-cancel">Cancel</button>
+      <button class="btn btn-primary" id="editor-save">Save part</button>
+    </footer>
+  </div>
+</div>
+
+<!-- New unit dialog -->
+<div id="unit-modal" class="modal hidden">
+  <div class="modal-content">
+    <header class="modal-head"><h2 id="unit-modal-title">New unit</h2><button class="icon-btn" id="unit-close">×</button></header>
+    <div class="modal-body">
+      <label>Number</label><input id="nu-number" placeholder="05" class="small-input" />
+      <label>Title</label><input id="nu-title" placeholder="DNA Replication" />
+      <label>Description</label><textarea id="nu-desc" rows="2"></textarea>
+    </div>
+    <footer class="modal-foot"><button class="btn btn-outline" id="unit-cancel">Cancel</button><button class="btn btn-primary" id="unit-create">Create unit</button></footer>
+  </div>
+</div>
+
+<!-- Edit unit dialog -->
+<div id="edit-unit-modal" class="modal hidden">
+  <div class="modal-content">
+    <header class="modal-head"><h2>Edit unit</h2><button class="icon-btn" id="eu-close">×</button></header>
+    <div class="modal-body">
+      <input type="hidden" id="eu-id" />
+      <label>Number</label><input id="eu-number" placeholder="05" class="small-input" />
+      <label>Title</label><input id="eu-title" />
+      <label>Description</label><textarea id="eu-desc" rows="2"></textarea>
+    </div>
+    <footer class="modal-foot"><button class="btn btn-outline" id="eu-cancel">Cancel</button><button class="btn btn-primary" id="eu-save">Save unit</button></footer>
+  </div>
+</div>
+
+<script src="/js/notes-editor.js"></script>

@@ -1,0 +1,40 @@
+<div class="page-head">
+  <p class="kicker">Flashcards Editor</p>
+  <h1>Manage flashcards</h1>
+  <p class="muted">Each card reviewed by a student = +2 points.</p>
+</div>
+<div class="cta-row"><button class="btn btn-primary" id="new-card-btn">+ New card</button></div>
+<div class="grid grid-3" id="cards-grid">
+  <% cards.forEach(c => {
+    const unit = units.find(u => u.id === c.unit_id);
+  %>
+    <div class="card flashcard-card" data-card-id="<%= c.id %>">
+      <div class="card-head">
+        <span class="badge"><%= unit ? unit.icon + ' ' + unit.title : '📚 General' %></span>
+        <div class="card-actions">
+          <button class="icon-btn edit-card" data-card='<%- safeJson(c) %>'><i data-lucide="pencil"></i></button>
+          <button class="icon-btn delete-card" data-card-id="<%= c.id %>"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>
+      <p class="strong"><%= c.front %></p>
+      <p class="muted small"><%= c.back %></p>
+    </div>
+  <% }) %>
+</div>
+
+<div id="card-modal" class="modal hidden">
+  <div class="modal-content">
+    <header class="modal-head"><h2 id="card-modal-title">New flashcard</h2><button class="icon-btn" id="card-close">✕</button></header>
+    <div class="modal-body">
+      <label>Front (term)</label><input id="card-front" />
+      <label>Back (definition)</label><textarea id="card-back" rows="3"></textarea>
+      <label>Unit</label>
+      <select id="card-unit">
+        <% units.forEach(u => { %><option value="<%= u.id %>"><%= u.icon %> <%= u.title %></option><% }) %>
+      </select>
+    </div>
+    <footer class="modal-foot"><button class="btn btn-outline" id="card-cancel">Cancel</button><button class="btn btn-primary" id="card-save">Save</button></footer>
+  </div>
+</div>
+
+<script src="/js/flashcards-editor.js"></script>

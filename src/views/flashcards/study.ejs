@@ -1,0 +1,44 @@
+<div class="page-head">
+  <p class="kicker">Flashcards</p>
+  <h1>Study Session</h1>
+  <p class="muted">Spaced-repetition practice. Click to reveal, then grade yourself.</p>
+</div>
+
+<div class="study-session">
+  <div class="study-header">
+    <div class="study-stats">
+      <span class="badge"><%= stats.mastered %> mastered</span>
+      <span class="badge"><%= stats.young %> young</span>
+      <span class="badge"><%= stats.learning %> learning</span>
+      <span class="badge"><%= stats.new %> new</span>
+    </div>
+    <div class="study-queue">
+      <span class="muted small"><%= dueCount %> due · <%= newCardCount %> new</span>
+    </div>
+  </div>
+
+  <div class="card-flip-container" id="card-container">
+    <div class="card-flip" id="card-flip">
+      <div class="card-face card-front">
+        <p class="muted small">Click to reveal</p>
+        <h2 id="card-front">Loading…</h2>
+      </div>
+      <div class="card-face card-back">
+        <h3 id="card-back">—</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="study-actions" id="study-actions" style="display:none;">
+    <button class="btn btn-danger" id="grade-again">Again</button>
+    <button class="btn btn-success" id="grade-good">Got it</button>
+  </div>
+
+  <p class="muted small center" id="study-status">Loading first card…</p>
+
+  <div class="cta-row">
+    <a href="/flashcards<%= unitId ? '?unit=' + unitId : '' %>" class="btn btn-outline">Back to flashcards</a>
+  </div>
+</div>
+
+<script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>" src="/js/flashcards-study.js" defer></script>

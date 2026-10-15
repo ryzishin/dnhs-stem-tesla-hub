@@ -1,0 +1,61 @@
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <img src="/assets/stem-logo.jpeg" alt="STEM logo" class="brand-logo-img" />
+    <div>
+      <div class="brand-text">DNHS STEM Tesla <strong>Hub</strong></div>
+      <div class="sidebar-sub">Biology 2 · Class Hub</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <% const role = user.role; %>
+    <% if (role === 'administrator') { %>
+      <a href="/admin" class="<%= path.startsWith('/admin') && path !== '/admin/settings' ? 'active' : '' %>"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
+      <a href="/admin/live-monitor"><i data-lucide="radio"></i> <span>Live Monitor</span></a>
+      <a href="/admin/live-history"><i data-lucide="history"></i> <span>Test History</span></a>
+      <a href="/admin/host-live"><i data-lucide="play-circle"></i> <span>Host Live Test</span></a>
+      <a href="/admin/live-editor"><i data-lucide="file-text"></i> <span>Edit Live Test</span></a>
+      <a href="/moderator/notes"><i data-lucide="pencil-line"></i> <span>Edit Notes</span></a>
+      <a href="/moderator/practice"><i data-lucide="clipboard-list"></i> <span>Edit Practice</span></a>
+      <a href="/moderator/flashcards"><i data-lucide="layers"></i> <span>Edit Flashcards</span></a>
+      <a href="/notes"><i data-lucide="book-open"></i> <span>View Notes</span></a>
+      <a href="/leaderboard"><i data-lucide="trophy"></i> <span>Leaderboard</span></a>
+      <a href="/classmates"><i data-lucide="users"></i> <span>Classmates</span></a>
+      <a href="/admin/settings"><i data-lucide="settings"></i> <span>Settings</span></a>
+      <a href="/profile"><i data-lucide="user"></i> <span>Profile</span></a>
+    <% } else if (role === 'moderator') { %>
+      <a href="/moderator/notes" class="<%= path.startsWith('/moderator') ? 'active' : '' %>"><i data-lucide="pencil-line"></i> <span>Edit Notes</span></a>
+      <a href="/moderator/practice"><i data-lucide="clipboard-list"></i> <span>Edit Practice</span></a>
+      <a href="/moderator/flashcards"><i data-lucide="layers"></i> <span>Edit Flashcards</span></a>
+      <a href="/notes"><i data-lucide="book-open"></i> <span>Read Notes</span></a>
+      <a href="/practice"><i data-lucide="brain"></i> <span>Practice Quizzes</span></a>
+      <a href="/flashcards"><i data-lucide="layers"></i> <span>Flashcards</span></a>
+      <a href="/leaderboard"><i data-lucide="trophy"></i> <span>Leaderboard</span></a>
+      <a href="/classmates"><i data-lucide="users"></i> <span>Classmates</span></a>
+      <a href="/profile"><i data-lucide="user"></i> <span>Profile</span></a>
+    <% } else { %>
+      <a href="/notes"><i data-lucide="book-open"></i> <span>Notes</span></a>
+      <a href="/practice"><i data-lucide="brain"></i> <span>Practice Quizzes</span></a>
+      <a href="/flashcards"><i data-lucide="layers"></i> <span>Flashcards</span></a>
+      <a href="/leaderboard"><i data-lucide="trophy"></i> <span>Leaderboard</span></a>
+      <a href="/classmates"><i data-lucide="users"></i> <span>Classmates</span></a>
+      <a href="/profile"><i data-lucide="user"></i> <span>Profile</span></a>
+    <% } %>
+  </nav>
+  <div class="sidebar-user">
+    <div class="avatar" style="--avatar-hue: <%= user.avatarColor || 200 %>;">
+      <% if (user.avatarUrl) { %>
+        <img src="<%= user.avatarUrl %>" alt="<%= user.name %>" class="avatar-img" />
+      <% } else { %>
+        <%= (user.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %>
+      <% } %>
+    </div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name"><%= user.name %></div>
+      <div class="sidebar-user-role">@<%= user.username %> · <%= user.role %></div>
+    </div>
+    <form method="post" action="/logout" style="margin:0">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button type="submit" class="icon-btn" title="Sign out"><i data-lucide="log-out"></i></button>
+    </form>
+  </div>
+</aside>

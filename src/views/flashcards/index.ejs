@@ -1,0 +1,63 @@
+<div class="page-head">
+  <p class="kicker">Flashcards</p>
+  <h1>Quick review</h1>
+  <p class="muted">Flip to reveal. Each card reviewed = +2 points toward the leaderboard.</p>
+</div>
+
+<% if (locals.stats) { %>
+  <div class="card study-cta-card">
+    <div class="study-cta">
+      <div>
+        <h3>Study session</h3>
+        <p class="muted small">Spaced-repetition practice. We surface cards you're about to forget, then mix in new ones.</p>
+      </div>
+      <a href="/flashcards/study<%= unitId ? '?unitId=' + unitId : '' %>" class="btn btn-primary">
+        <i data-lucide="graduation-cap" class="inline-icon"></i> Start study session
+      </a>
+    </div>
+    <div class="mastery-bar-row">
+      <span class="badge">Mastered: <%= stats.mastered %></span>
+      <span class="badge">Young: <%= stats.young %></span>
+      <span class="badge">Learning: <%= stats.learning %></span>
+      <span class="badge">New: <%= stats.new %></span>
+      <span class="muted small">/ <%= stats.total %> total</span>
+    </div>
+  </div>
+<% } %>
+
+<div class="filter-row">
+  <a href="/flashcards" class="chip <%= !unitId ? 'active' : '' %>">All cards</a>
+  <% units.forEach(u => { %>
+    <a href="/flashcards?unit=<%= u.id %>" class="chip <%= unitId === u.id ? 'active' : '' %>"><%= u.icon %> <%= u.title %></a>
+  <% }) %>
+</div>
+
+<% if (cards.length === 0) { %>
+  <div class="empty-state"><p>No flashcards in this filter.</p></div>
+<% } else { %>
+  <div class="flashcard-stage">
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-face flashcard-front">
+        <span class="kicker">Term</span>
+        <p class="flashcard-text" id="card-front"></p>
+        <small class="muted">Click to flip</small>
+      </div>
+      <div class="flashcard-face flashcard-back">
+        <span class="kicker">Definition</span>
+        <p class="flashcard-text" id="card-back"></p>
+        <small class="muted">Click to flip back</small>
+      </div>
+    </div>
+    <div class="flashcard-controls">
+      <button class="btn btn-outline" id="prev-card">← Prev</button>
+      <button class="btn btn-primary" id="known-card">✓ Got it (+2)</button>
+      <button class="btn btn-outline" id="next-card">Next →</button>
+    </div>
+    <p class="muted center" id="card-counter">Card 1 of <%= cards.length %></p>
+  </div>
+
+  <script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>">
+    window.__FLASHCARDS__ = <%- safeJson(cards) %>;
+  </script>
+  <script nonce="<%= typeof nonce !== 'undefined' ? nonce : '' %>" src="/js/flashcards.js"></script>
+<% } %>

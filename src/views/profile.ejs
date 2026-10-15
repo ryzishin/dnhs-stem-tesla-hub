@@ -1,0 +1,135 @@
+<div class="page-head">
+  <p class="kicker">Profile</p>
+  <h1><%= isOwn ? "Your account" : profileUser.name %></h1>
+  <% if (!isOwn) { %>
+    <a href="/classmates" class="back-link">← Back to classmates</a>
+  <% } %>
+</div>
+
+<div class="grid grid-3">
+  <!-- Profile card -->
+  <div class="card center">
+    <% if (isOwn) { %>
+      <div class="avatar-wrap" id="avatar-wrap">
+        <button type="button" id="avatar-btn" class="avatar-btn" title="Click to change photo">
+          <div class="avatar avatar-xl" style="--avatar-hue: <%= profileUser.avatarColor || 200 %>;">
+            <% if (profileUser.avatarUrl) { %><img src="<%= profileUser.avatarUrl %>" alt="<%= profileUser.name %>" /><% } else { %><%= (profileUser.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %><% } %>
+          </div>
+        </button>
+        <div class="avatar-menu hidden" id="avatar-menu">
+          <button type="button" id="upload-photo-btn">Upload photo</button>
+          <% if (profileUser.avatarUrl) { %><button type="button" id="remove-photo-btn" class="danger">Remove photo</button><% } %>
+          <button type="button" class="cancel-avatar-menu">Cancel</button>
+        </div>
+        <input type="file" id="avatar-file-input" accept="image/*" hidden />
+      </div>
+    <% } else { %>
+      <div class="avatar avatar-xl" style="--avatar-hue: <%= profileUser.avatarColor || 200 %>;">
+        <% if (profileUser.avatarUrl) { %><img src="<%= profileUser.avatarUrl %>" alt="<%= profileUser.name %>" /><% } else { %><%= (profileUser.name || '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() %><% } %>
+      </div>
+    <% } %>
+    <h2 class="mt"><%= profileUser.name %></h2>
+    <span class="badge <% if (profileUser.role === 'administrator') { %>admin<% } else if (profileUser.role === 'moderator') { %>warn<% } %>"><%= profileUser.role %></span>
+    <p class="muted small mono">@<%= profileUser.username %></p>
+    <% if (profileUser.bio) { %><p class="muted small mt"><%= profileUser.bio %></p><% } %>
+
+    <!-- Social links -->
+    <% if (profileUser.socials) { %>
+      <div class="social-row">
+        <% ['twitter','instagram','github','facebook','tiktok','youtube','website'].forEach(k => { %>
+          <% if (profileUser.socials[k]) { %>
+            <%
+              // v2-P2-5: Lucide icon names (replaces emoji set).
+              const icons = { twitter:'at-sign', instagram:'camera', github:'github', facebook:'facebook', tiktok:'music', youtube:'youtube', website:'globe' };
+              const bases = { twitter:'https://twitter.com/', instagram:'https://instagram.com/', github:'https://github.com/', facebook:'https://facebook.com/', tiktok:'https://tiktok.com/@', youtube:'https://youtube.com/@', website:'' };
+              const v = profileUser.socials[k];
+              const href = (v.startsWith('http') || k === 'website') ? (v.startsWith('http') ? v : 'https://' + v) : (bases[k] + v.replace(/^@/, ''));
+            %>
+            <a href="<%= href %>" target="_blank" rel="noopener noreferrer" class="social-chip social-<%= k %>" title="<%= k %>: <%= v %>">
+              <i data-lucide="<%= icons[k] %>"></i>
+              <span class="social-label"><%= k %></span>
+            </a>
+          <% } %>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (isOwn) { %>
+      <!-- Avatar upload handled by the popup menu above -->
+    <% } %>
+  </div>
+
+  <!-- Edit form (only on own profile) OR stats (public profile) -->
+  <div class="card col-span-2">
+    <% if (isOwn) { %>
+      <h3>Edit profile</h3>
+      <label>Display name</label>
+      <input type="text" id="profile-name" value="<%= profileUser.name %>" />
+
+      <label>Bio <span class="muted small">(optional — shown on your public profile)</span></label>
+      <textarea id="profile-bio" rows="3" maxlength="280" placeholder="Tell classmates a bit about you…"><%= profileUser.bio || '' %></textarea>
+      <p class="muted small"><span id="bio-count"><%= (profileUser.bio || '').length %></span>/280</p>
+
+      <button class="btn btn-primary" id="save-profile">Save changes</button>
+
+      <hr class="my" />
+
+      <h3>Social links <span class="muted small">(optional)</span></h3>
+      <div id="socials-form">
+        <% const socials = profileUser.socials || {}; %>
+        <div class="social-input"><label>Twitter / X</label><input data-k="twitter" value="<%= socials.twitter || '' %>" placeholder="@handle" /></div>
+        <div class="social-input"><label>Instagram</label><input data-k="instagram" value="<%= socials.instagram || '' %>" placeholder="@handle" /></div>
+        <div class="social-input"><label>GitHub</label><input data-k="github" value="<%= socials.github || '' %>" placeholder="@handle" /></div>
+        <div class="social-input"><label>Facebook</label><input data-k="facebook" value="<%= socials.facebook || '' %>" placeholder="/handle" /></div>
+        <div class="social-input"><label>TikTok</label><input data-k="tiktok" value="<%= socials.tiktok || '' %>" placeholder="@handle" /></div>
+        <div class="social-input"><label>YouTube</label><input data-k="youtube" value="<%= socials.youtube || '' %>" placeholder="@handle" /></div>
+        <div class="social-input"><label>Website</label><input data-k="website" value="<%= socials.website || '' %>" placeholder="yoursite.com" /></div>
+        <button class="btn btn-primary" id="save-socials">Save socials</button>
+      </div>
+
+      <hr class="my" />
+
+      <h3>Change password</h3>
+      <label>Current password</label>
+      <input type="password" id="cur-pwd" placeholder="••••••••" autocomplete="current-password" />
+      <label>New password</label>
+      <input type="password" id="new-pwd" placeholder="At least 6 characters" autocomplete="new-password" />
+      <label>Confirm new password</label>
+      <input type="password" id="confirm-pwd" placeholder="Re-type new password" autocomplete="new-password" />
+      <button class="btn btn-primary" id="change-password-btn">Change password</button>
+    <% } else { %>
+      <h3>Stats</h3>
+      <div class="stat-row">
+        <div class="stat-card"><i data-lucide="trophy" class="stat-icon"></i><div><div class="stat-val"><%= profileUser.points %></div><div class="stat-label">Total points</div></div></div>
+        <div class="stat-card"><i data-lucide="flame" class="stat-icon"></i><div><div class="stat-val"><%= profileUser.streakDays %></div><div class="stat-label">Day streak</div></div></div>
+        <div class="stat-card"><i data-lucide="brain" class="stat-icon"></i><div><div class="stat-val"><%= profileUser.practiceQuizzesTaken %></div><div class="stat-label">Quizzes taken</div></div></div>
+        <div class="stat-card"><i data-lucide="layers" class="stat-icon"></i><div><div class="stat-val"><%= profileUser.flashcardsReviewed %></div><div class="stat-label">Cards reviewed</div></div></div>
+      </div>
+    <% } %>
+
+    <% if (isOwn) { %>
+      <hr class="my" />
+      <h3>Your stats</h3>
+      <div class="stat-row">
+        <div class="stat-card"><i data-lucide="trophy" class="stat-icon"></i><div><div class="stat-val"><%= profileUser.points %></div><div class="stat-label">Total points</div></div></div>
+        <div class="stat-card"><i data-lucide="flame" class="stat-icon"></i><div><div class="stat-val"><%= profileUser.streakDays %></div><div class="stat-label">Day streak</div></div></div>
+        <div class="stat-card"><i data-lucide="brain" class="stat-icon"></i><div><div class="stat-val"><%= attempts.length %></div><div class="stat-label">Quizzes taken</div></div></div>
+        <div class="stat-card"><i data-lucide="layers" class="stat-icon"></i><div><div class="stat-val"><%= profileUser.flashcardsReviewed %></div><div class="stat-label">Cards reviewed</div></div></div>
+      </div>
+    <% } %>
+
+    <% if (attempts.length > 0) { %>
+      <h3 class="mt">Recent practice attempts</h3>
+      <div class="attempts-list">
+        <% attempts.slice(0, 8).forEach(a => { %>
+          <div class="attempt-row">
+            <div><strong><%= a.quizzes ? a.quizzes.title : 'Quiz' %></strong><div class="muted small"><%= new Date(a.takenAt || a.createdAt).toLocaleString() %></div></div>
+            <div class="attempt-score"><strong><%= a.score %>/<%= a.total %></strong><div class="muted small"><%= Math.round(a.score / a.total * 100) %>%</div></div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script src="/js/profile.js"></script>
