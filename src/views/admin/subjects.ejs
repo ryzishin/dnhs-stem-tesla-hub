@@ -1,0 +1,49 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/admin">Admin</a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span>Subjects</span>
+  </nav>
+
+  <div class="page-head">
+    <div class="page-title">
+      <svg class="icon" style="color:var(--coral)" aria-hidden="true"><use href="#i-atom"></use></svg>
+      <h1 style="font-size:26px">Subjects</h1>
+    </div>
+    <button class="btn btn-primary" id="subject-add" type="button">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-plus"></use></svg> Add subject
+    </button>
+  </div>
+  <p class="muted">Every note, quiz and deck belongs to a subject. Archive instead of delete when content exists — deleting is only allowed for empty subjects.</p>
+
+  <% if (subjects.length) { %>
+    <div class="stack" style="gap:var(--sp-3)">
+      <% subjects.forEach(function (s, i) { %>
+        <div class="card card-pad">
+          <div class="row" style="align-items:flex-start">
+            <span class="subject-tile tile-<%= s.color %>"><svg class="icon" aria-hidden="true"><use href="#i-<%= s.icon %>"></use></svg></span>
+            <div style="flex:1; min-width:220px">
+              <div class="row">
+                <b><%= s.name %></b>
+                <% if (s.archived) { %><span class="chip chip-plain">archived</span><% } %>
+              </div>
+              <p class="small muted"><%= s.slug %> · <%= counts[i].notes %> notes · <%= counts[i].quizzes %> quizzes · <%= counts[i].decks %> decks</p>
+            </div>
+            <div class="row" style="gap:6px">
+              <button class="btn btn-outline btn-sm js-edit-subject" data-id="<%= s._id %>"
+                data-name="<%= s.name %>" data-blurb="<%= s.blurb || "" %>" data-archived="<%= s.archived ? "1" : "" %>" type="button">
+                <svg class="icon icon-sm" aria-hidden="true"><use href="#i-edit"></use></svg> Rename
+              </button>
+              <button class="btn btn-outline btn-sm js-archive" data-id="<%= s._id %>" data-archived="<%= s.archived ? "1" : "" %>" type="button">
+                <%= s.archived ? "Unarchive" : "Archive" %>
+              </button>
+              <button class="btn btn-danger btn-sm js-delete-subject" data-id="<%= s._id %>" data-name="<%= s.name %>" type="button" aria-label="Delete <%= s.name %>">
+                <svg class="icon icon-sm" aria-hidden="true"><use href="#i-trash"></use></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty"><h3>No subjects yet</h3><p>Add the first one with the button above.</p></div>
+  <% } %>
+</div>

@@ -1,0 +1,71 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/build">Builders</a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg>
+    <span><%= subject.name %> · <%= kind === "notes" ? "Notes" : kind === "decks" ? "Flashcards" : "Quizzes" %></span>
+  </nav>
+
+  <div class="page-head">
+    <div class="page-title">
+      <span class="subject-tile tile-<%= subject.color %>"><svg class="icon" aria-hidden="true"><use href="#i-<%= subject.icon %>"></use></svg></span>
+      <h1 style="font-size:26px"><%= title %></h1>
+    </div>
+    <button class="btn btn-primary js-create" data-kind="<%= kind %>" data-subject="<%= subject.id %>">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-plus"></use></svg>
+      <%= kind === "notes" ? "New note" : kind === "decks" ? "New deck" : "New quiz" %>
+    </button>
+  </div>
+  <% if (kind === "quizzes" && isAdmin) { %>
+    <div class="form-row">
+      <div class="field">
+        <label for="quiz-mode">Type for the next quiz you create</label>
+        <select class="select" id="quiz-mode">
+          <option value="practice">Practice — students retake freely, points count</option>
+          <option value="live">Live — hosted in class, server-scored, no points</option>
+        </select>
+      </div>
+    </div>
+  <% } %>
+
+  <% if (items.length) { %>
+    <div class="content-list">
+      <% items.forEach(function (it) { %>
+        <div class="card content-item">
+          <svg class="icon" aria-hidden="true"><use href="#i-<%= kind === "notes" ? "book" : kind === "decks" ? "cards" : "quiz" %>"></use></svg>
+          <span>
+            <b><%= it.title %></b>
+            <% if (!it.published) { %> <span class="chip chip-amber">draft</span><% } %>
+            <% if (it.mode) { %> <span class="chip <%= it.mode === "live" ? "chip-coral" : "chip-teal" %>"><%= it.mode %></span><% } %>
+            <br>
+            <span class="muted">
+              <%= kind === "notes" ? ((it.blocks || []).length + " blocks · " + (it.sources || []).length + " sources")
+                  : kind === "decks" ? ((it.cards || []).length + " cards")
+                  : ((it.items || []).length + " items") %>
+            </span>
+          </span>
+          <span class="spacer"></span>
+          <% if (kind !== "quizzes" || it.mode === "practice") { %>
+            <% const viewUrl = kind === "notes" ? "/notes/" + it._id : kind === "decks" ? "/deck/" + it._id : "/quiz/" + it._id; %>
+            <a class="btn btn-ghost btn-icon" href="<%= viewUrl %>" aria-label="Preview <%= it.title %>" title="Preview">
+              <svg class="icon icon-sm" aria-hidden="true"><use href="#i-eye"></use></svg>
+            </a>
+          <% } %>
+          <a class="btn btn-outline btn-sm" href="/build/<%= kind === "notes" ? "notes" : kind === "decks" ? "decks" : "quiz" %>/<%= it._id %>">
+            <svg class="icon icon-sm" aria-hidden="true"><use href="#i-edit"></use></svg> Edit
+          </a>
+          <button class="btn btn-danger btn-icon js-delete" data-kind="<%= kind %>" data-id="<%= it._id %>" data-title="<%= it.title %>" type="button" aria-label="Delete <%= it.title %>">
+            <svg class="icon icon-sm" aria-hidden="true"><use href="#i-trash"></use></svg>
+          </button>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty">
+      <svg class="icon" aria-hidden="true"><use href="#i-<%= kind === "notes" ? "book" : kind === "decks" ? "cards" : "quiz" %>"></use></svg>
+      <h3>Nothing here yet</h3>
+      <p>Create your first <%= kind === "notes" ? "note" : kind === "decks" ? "deck" : "quiz" %> for <%= subject.name %> — classmates see it the moment you publish.</p>
+      <button class="btn btn-primary js-create" data-kind="<%= kind %>" data-subject="<%= subject.id %>">
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#i-plus"></use></svg> Create one now
+      </button>
+    </div>
+  <% } %>
+</div>

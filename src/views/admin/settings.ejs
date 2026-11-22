@@ -1,0 +1,65 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/admin">Admin</a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span>Settings</span>
+  </nav>
+
+  <div class="page-head">
+    <div class="page-title">
+      <svg class="icon" style="color:var(--navy)" aria-hidden="true"><use href="#i-settings"></use></svg>
+      <h1 style="font-size:26px">Settings</h1>
+    </div>
+  </div>
+
+  <form id="settings-form" class="profile-grid">
+    <div class="stack" style="gap:var(--sp-4)">
+      <div class="card card-pad">
+        <h2 style="font-size:18px">Registration</h2>
+        <label class="check mt-4">
+          <input type="checkbox" name="allowRegistration" <%= settings.allowRegistration ? "checked" : "" %>>
+          <span><b>Allow open signup.</b> Anyone with the link can register as a student. Turn this off after the section has joined (e.g. during breaks) — you can always reopen it.</span>
+        </label>
+      </div>
+
+      <div class="card card-pad">
+        <h2 style="font-size:18px">Live test anti-cheat</h2>
+        <p class="muted small mt-2">Applied to every new live session you host. When a student reaches the warning cap their test is <b>auto-submitted as-is</b> — they keep their score but can't answer anything more, and can only return if you approve their re-attempt request.</p>
+        <div class="stack mt-4" style="gap:10px">
+          <label class="check"><input type="checkbox" name="tabWarning" <%= settings.antiCheat.tabWarning ? "checked" : "" %>> <span>Count warnings when a student leaves the page — switching tabs, opening another app, or exiting fullscreen</span></label>
+          <label class="check"><input type="checkbox" name="fullscreen" <%= settings.antiCheat.fullscreen ? "checked" : "" %>> <span>Run live tests in fullscreen and treat leaving it as a warning</span></label>
+          <label class="check"><input type="checkbox" name="blockCopy" <%= settings.antiCheat.blockCopy ? "checked" : "" %>> <span>Block copy, cut, paste and right-click during live tests</span></label>
+          <div class="field" style="max-width:220px">
+            <label for="warningsCap">Warnings before auto-submit</label>
+            <input class="input" id="warningsCap" name="warningsCap" type="number" min="1" max="10" value="<%= settings.antiCheat.warningsCap %>">
+            <span class="hint">Every student gets one attempt. You approve re-attempts by request.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack" style="gap:var(--sp-4)">
+      <div class="card card-pad">
+        <h2 style="font-size:18px">Points rules</h2>
+        <p class="muted small mt-2">Only practice quizzes, flashcards and daily streaks earn points — live tests never do.</p>
+        <div class="form-row mt-4">
+          <div class="field">
+            <label for="quizBase">Per practice quiz finished</label>
+            <input class="input" id="quizBase" name="quizBase" type="number" min="0" max="50" value="<%= settings.points.quizBase %>">
+            <span class="hint">Plus 1 point per correct item.</span>
+          </div>
+          <div class="field">
+            <label for="cardPoints">Per flashcard marked “knew it”</label>
+            <input class="input" id="cardPoints" name="cardPoints" type="number" min="0" max="10" value="<%= settings.points.cardPoints %>">
+          </div>
+          <div class="field">
+            <label for="streakBonus">Daily streak bonus</label>
+            <input class="input" id="streakBonus" name="streakBonus" type="number" min="0" max="20" value="<%= settings.points.streakBonus %>">
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save settings</button>
+        <span id="settings-status" class="small" style="color:var(--ok); font-weight:700"></span>
+      </div>
+    </div>
+  </form>
+</div>

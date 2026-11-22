@@ -1,0 +1,92 @@
+<div class="container page">
+  <div class="page-head">
+    <div class="page-title">
+      <svg class="icon" style="color:var(--navy)" aria-hidden="true"><use href="#i-shield"></use></svg>
+      <h1>Admin</h1>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="/admin/subjects">Subjects</a>
+      <a class="btn btn-outline btn-sm" href="/admin/users">People & roles</a>
+      <a class="btn btn-outline btn-sm" href="/admin/settings">Settings</a>
+    </div>
+  </div>
+
+  <div class="admin-cards">
+    <div class="card stat-card"><b><%= stats.users %></b><span>members</span></div>
+    <div class="card stat-card"><b><%= stats.notes %></b><span>notes</span></div>
+    <div class="card stat-card"><b><%= stats.quizzes %></b><span>quizzes</span></div>
+    <div class="card stat-card"><b><%= stats.decks %></b><span>decks</span></div>
+    <div class="card stat-card"><b><%= stats.attempts %></b><span>attempts</span></div>
+  </div>
+
+  <section class="page" style="gap:var(--sp-3)">
+    <h2 style="font-size:20px">Subjects</h2>
+    <% if (subjects.length) { %>
+      <div class="subject-grid">
+        <% subjects.forEach(function (s) { %>
+          <a class="card card-hover subject-card" href="/admin/subjects">
+            <span class="subject-tile tile-<%= s.color %>"><svg class="icon" aria-hidden="true"><use href="#i-<%= s.icon %>"></use></svg></span>
+            <span><h3><%= s.name %></h3><p><%= s.blurb || "" %></p></span>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty">
+        <svg class="icon" aria-hidden="true"><use href="#i-atom"></use></svg>
+        <h3>No subjects yet</h3>
+        <p>Subjects are the shelves everything sits on — create one per class you're taking.</p>
+        <a href="/admin/subjects" class="btn btn-primary">Create subjects</a>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="page" style="gap:var(--sp-3)">
+    <h2 style="font-size:20px">Newest members</h2>
+    <% if (recentUsers.length) { %>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Member</th><th>Username</th><th>Role</th><th>Joined</th></tr></thead>
+          <tbody>
+            <% recentUsers.forEach(function (u) { %>
+              <tr>
+                <td><span class="row" style="flex-wrap:nowrap"><%- avatarHtml(u, "avatar-sm") %><b><%= u.name %></b></span></td>
+                <td class="muted">@<%= u.username %></td>
+                <td>
+                  <% if (u.role === "admin") { %><span class="chip chip-navy">adviser</span>
+                  <% } else if (u.role === "moderator") { %><span class="chip chip-teal">moderator</span>
+                  <% } else { %><span class="chip chip-plain">student</span><% } %>
+                </td>
+                <td><%= fmtDate(u.createdAt) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <a href="/admin/users" class="btn btn-outline btn-sm" style="align-self:flex-start">Manage everyone →</a>
+    <% } else { %>
+      <div class="empty"><p>No members yet — the first account to register becomes the adviser (admin).</p></div>
+    <% } %>
+  </section>
+
+  <section class="page" style="gap:var(--sp-3)">
+    <h2 style="font-size:20px">Live sessions</h2>
+    <% if (activeSessions.length) { %>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Quiz</th><th>Host</th><th>Status</th></tr></thead>
+          <tbody>
+            <% activeSessions.forEach(function (s) { %>
+              <tr>
+                <td><b><%= s.quiz?.title || "—" %></b></td>
+                <td><%= s.host?.name || "—" %></td>
+                <td><span class="chip <%= s.status === "active" ? "chip-coral" : "chip-navy" %>"><span class="badge-dot"></span> <%= s.status %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="muted small">No live test is running right now.</p>
+    <% } %>
+  </section>
+</div>

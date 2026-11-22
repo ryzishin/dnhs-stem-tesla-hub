@@ -1,0 +1,47 @@
+<div class="container page">
+  <div class="page-head">
+    <div class="page-title">
+      <svg class="icon" style="color:var(--coral)" aria-hidden="true"><use href="#i-wrench"></use></svg>
+      <h1>Builders</h1>
+    </div>
+  </div>
+  <p class="muted"><%= currentUser.role === "admin" ? "You can build in every subject — and create live quizzes for the Host tab." : "You build notes, practice quizzes and flashcards inside your assigned subjects. Live tests are hosted by the adviser." %> Everything saves with one click — no database needed.</p>
+
+  <% if (subjects.length) { %>
+    <div class="subject-grid">
+      <% subjects.forEach(function (s, i) { %>
+        <div class="card card-pad">
+          <div class="row">
+            <span class="subject-tile tile-<%= s.color %>"><svg class="icon" aria-hidden="true"><use href="#i-<%= s.icon %>"></use></svg></span>
+            <div>
+              <h3 style="font-size:17px"><%= s.name %></h3>
+              <p class="small muted"><%= counts[i].notes %> notes · <%= counts[i].quizzes %> quizzes · <%= counts[i].decks %> decks</p>
+            </div>
+          </div>
+          <div class="row mt-4" style="gap:8px">
+            <a class="btn btn-outline btn-sm" href="/build/notes?subject=<%= s.slug %>">
+              <svg class="icon icon-sm" aria-hidden="true"><use href="#i-book"></use></svg> Notes
+            </a>
+            <a class="btn btn-outline btn-sm" href="/build/quizzes?subject=<%= s.slug %>">
+              <svg class="icon icon-sm" aria-hidden="true"><use href="#i-quiz"></use></svg> Quizzes
+            </a>
+            <a class="btn btn-outline btn-sm" href="/build/decks?subject=<%= s.slug %>">
+              <svg class="icon icon-sm" aria-hidden="true"><use href="#i-cards"></use></svg> Decks
+            </a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty">
+      <svg class="icon" aria-hidden="true"><use href="#i-wrench"></use></svg>
+      <h3>No subjects assigned yet</h3>
+      <% if (currentUser.role === "admin") { %>
+        <p>Create subjects in the Admin panel first — then they show up here.</p>
+        <a href="/admin/subjects" class="btn btn-primary">Create subjects</a>
+      <% } else { %>
+        <p>Your adviser assigns moderators to subjects from Admin → People & roles.</p>
+      <% } %>
+    </div>
+  <% } %>
+</div>

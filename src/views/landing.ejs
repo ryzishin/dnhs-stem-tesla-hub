@@ -1,0 +1,110 @@
+<section class="landing-hero">
+  <div class="container hero-inner">
+    <img src="/assets/stem-logo.jpeg" alt="STEM Tesla logo — Dangcagan National High School" width="104" height="104" class="hero-logo">
+    <p class="hero-kicker">Dangcagan NHS · STEM Tesla · SY 2026–2027</p>
+    <h1 class="hero-title">Every subject. One <em>hub</em> for our section.</h1>
+    <p class="hero-sub">Notes that credit their sources, practice quizzes you can retake, flashcards for quick review, and live tests hosted in class — built by the Tesla section, for the Tesla section.</p>
+    <div class="hero-cta">
+      <% if (currentUser) { %>
+        <a href="/hub" class="btn btn-primary">Open the hub</a>
+        <a href="/leaderboard" class="btn btn-outline" style="border-color:rgba(255,255,255,.35);background:transparent;color:#fff">Leaderboard</a>
+      <% } else { %>
+        <a href="/register" class="btn btn-primary">Create account</a>
+        <a href="/login" class="btn btn-outline" style="border-color:rgba(255,255,255,.35);background:transparent;color:#fff">Sign in</a>
+      <% } %>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><b><%= stats.notes %></b><span>notes</span></div>
+      <div class="hero-stat"><b><%= stats.quizzes %></b><span>quizzes</span></div>
+      <div class="hero-stat"><b><%= stats.decks %></b><span>card decks</span></div>
+      <div class="hero-stat"><b><%= stats.users %></b><span>members</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="landing-section">
+  <div class="container">
+    <div class="landing-head">
+      <p class="kicker">Subjects</p>
+      <h2>Everything we're taking, in one place</h2>
+      <p class="muted">Moderators — trusted classmates — keep each subject fresh. The adviser oversees everything and hosts live tests.</p>
+    </div>
+    <% if (subjects.length) { %>
+      <div class="subject-grid">
+        <% subjects.forEach(function (s) { %>
+          <a class="card card-hover subject-card" href="<%= currentUser ? '/s/' + s.slug : '/login' %>">
+            <span class="subject-tile tile-<%= s.color %>"><svg class="icon" aria-hidden="true"><use href="#i-<%= s.icon %>"></use></svg></span>
+            <span>
+              <h3><%= s.name %></h3>
+              <p><%= s.blurb || "Notes, quizzes and flashcards for this subject." %></p>
+            </span>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty">
+        <svg class="icon" aria-hidden="true"><use href="#i-atom"></use></svg>
+        <h3>No subjects yet</h3>
+        <p>The adviser adds subjects from the Admin panel. Once subjects exist, moderators can start filling them.</p>
+        <a href="/login" class="btn btn-primary">Sign in</a>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<section class="landing-section alt">
+  <div class="container">
+    <div class="landing-head">
+      <p class="kicker">What's inside</p>
+      <h2>Built around how we actually study</h2>
+    </div>
+    <div class="feature-list">
+      <div class="feature-item">
+        <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+        <div><h3>Notes worth reading</h3><p>Structured into headings, key terms, callouts and images — with the sources listed at the bottom of every page.</p></div>
+      </div>
+      <div class="feature-item">
+        <svg class="icon" aria-hidden="true"><use href="#i-quiz"></use></svg>
+        <div><h3>Practice without pressure</h3><p>Retake practice quizzes as many times as you want. Instant scoring, explanations after every attempt.</p></div>
+      </div>
+      <div class="feature-item">
+        <svg class="icon" aria-hidden="true"><use href="#i-cards"></use></svg>
+        <div><h3>Flashcards that flip</h3><p>Quick review decks for vocabulary and formulas. Mark what you knew — earn points as you go.</p></div>
+      </div>
+      <div class="feature-item">
+        <svg class="icon" aria-hidden="true"><use href="#i-broadcast"></use></svg>
+        <div><h3>Live tests in class</h3><p>Your host opens one question at a time. Answers are scored by the server, so every point is earned fairly.</p></div>
+      </div>
+      <div class="feature-item">
+        <svg class="icon" aria-hidden="true"><use href="#i-flame"></use></svg>
+        <div><h3>Streaks & points</h3><p>Show up daily, finish quizzes, review cards. Climb the weekly leaderboard with your classmates.</p></div>
+      </div>
+      <div class="feature-item">
+        <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+        <div><h3>Role system that works</h3><p>Students study, moderators build their subject, the adviser keeps the keys. Everyone sees exactly what they need.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="landing-section">
+  <div class="container credibility">
+    <div>
+      <p class="kicker">Credible by default</p>
+      <h2 class="mt-2">You always know where the material came from</h2>
+      <p class="muted mt-4">Every note ends with a short "Where this comes from" list. Free, reputable references — the same ones your teachers use — so studying here is never a guess.</p>
+    </div>
+    <div class="stack">
+      <div class="card card-pad cred-card">
+        <h3>OpenStax</h3>
+        <p>Peer-reviewed, openly licensed textbooks from Rice University — the backbone of our science notes.</p>
+        <a href="https://openstax.org" target="_blank" rel="noopener">openstax.org <svg class="icon icon-sm" aria-hidden="true"><use href="#i-external"></use></svg></a>
+      </div>
+      <div class="card card-pad cred-card">
+        <h3>Khan Academy</h3>
+        <p>Practice-first explanations for math topics, from conics to calculus.</p>
+        <a href="https://www.khanacademy.org" target="_blank" rel="noopener">khanacademy.org <svg class="icon icon-sm" aria-hidden="true"><use href="#i-external"></use></svg></a>
+      </div>
+    </div>
+  </div>
+</section>

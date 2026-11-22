@@ -1,0 +1,127 @@
+/* base.css — tokens, reset, typography. Mobile-first. */
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/PlusJakartaSans.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* brand — pulled from the STEM logo: navy gear, coral ring, teal atom, amber electrons, sky DNA */
+  --navy: #1B2A55;
+  --navy-2: #24356B;
+  --navy-soft: #EAEDF6;
+  --ink: #1D2433;
+  --muted: #5D6574;
+  --faint: #8B92A1;
+
+  --coral: #D5483F;
+  --coral-hover: #C23C34;
+  --coral-soft: #FCEBE9;
+  --teal: #238E86;
+  --teal-soft: #E3F2F0;
+  --amber: #C77F1F;
+  --amber-soft: #FAF0DC;
+  --sky: #3E7CA8;
+  --sky-soft: #E8F1F8;
+  --plum: #7D5BA6;
+  --plum-soft: #F1EBF7;
+
+  --bg: #FAF8F4;
+  --card: #FFFFFF;
+  --line: #E8E3D9;
+  --line-strong: #D8D1C3;
+
+  --ok: #25854B;
+  --ok-soft: #E4F3EA;
+  --bad: #C23A3A;
+  --bad-soft: #FBEAEA;
+
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+
+  --r-sm: 8px; --r-md: 12px; --r-lg: 18px; --r-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgb(29 36 51 / 0.05), 0 1px 6px rgb(29 36 51 / 0.04);
+  --shadow-md: 0 2px 4px rgb(29 36 51 / 0.05), 0 6px 20px rgb(29 36 51 / 0.08);
+  --shadow-nav: 0 1px 0 var(--line);
+
+  --t-fast: 150ms ease-out;
+  --t-med: 250ms ease-out;
+
+  --content: 1080px;
+  --content-text: 68ch;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--bg);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip; /* horizontal slides live inside .table-wrap / .strip-scroll only */
+}
+
+h1, h2, h3, h4 { line-height: 1.2; margin: 0; letter-spacing: -0.015em; color: var(--ink); }
+h1 { font-size: clamp(28px, 6vw, 44px); font-weight: 800; }
+h2 { font-size: clamp(22px, 4vw, 32px); font-weight: 700; }
+h3 { font-size: 20px; font-weight: 700; }
+h4 { font-size: 16px; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--coral); text-decoration: none; }
+a:hover { color: var(--coral-hover); }
+img { max-width: 100%; display: block; }
+[hidden] { display: none !important; }
+hr { border: 0; border-top: 1px solid var(--line); margin: var(--sp-5) 0; }
+ul, ol { margin: 0; padding-left: 1.4em; }
+li { margin: 4px 0; }
+code { font-family: ui-monospace, monospace; font-size: 0.92em; background: var(--navy-soft); border-radius: 4px; padding: 1px 5px; }
+
+/* icons */
+.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.icon-sm { width: 16px; height: 16px; }
+
+/* layout primitives */
+.container { width: 100%; max-width: var(--content); margin-inline: auto; padding-inline: var(--sp-4); }
+.site-main { flex: 1; padding-block: var(--sp-5) var(--sp-7); }
+.page { display: flex; flex-direction: column; gap: var(--sp-5); }
+.page-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.page-title { display: flex; align-items: center; gap: var(--sp-3); }
+.grid { display: grid; gap: var(--sp-4); }
+@media (min-width: 640px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.skip-link {
+  position: absolute; left: -999px; top: 8px; z-index: 100;
+  background: var(--navy); color: #fff; padding: 8px 14px; border-radius: var(--r-sm);
+}
+.skip-link:focus { left: 8px; }
+
+/* text helpers */
+.kicker { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--coral); }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.t-right { text-align: right; }
+.mt-2 { margin-top: var(--sp-2); } .mt-3 { margin-top: var(--sp-3); } .mt-4 { margin-top: var(--sp-4); } .mt-6 { margin-top: var(--sp-6); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+::selection { background: var(--coral-soft); color: var(--coral-hover); }
+
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--coral) 45%, transparent); outline-offset: 2px; border-radius: 4px; }

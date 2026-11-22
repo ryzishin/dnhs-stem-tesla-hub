@@ -1,0 +1,126 @@
+<div class="container page">
+  <h1>My profile</h1>
+  <% if (query.saved) { %><div class="flash flash-ok" role="status"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Profile saved.</span></div><% } %>
+  <% if (query.pw === "ok") { %><div class="flash flash-ok" role="status"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Password updated.</span></div><% } %>
+  <% if (query.pw === "wrong") { %><div class="flash flash-error" role="status"><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg><span>That current password didn't match — nothing changed.</span></div><% } %>
+  <% if (query.pw === "match") { %><div class="flash flash-error" role="status"><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg><span>New passwords must match and be at least 6 characters.</span></div><% } %>
+  <% if (error) { %><div class="flash flash-error" role="status"><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg><span><%= error %></span></div><% } %>
+
+  <div class="profile-grid">
+    <div class="stack" style="gap:var(--sp-4)">
+      <div class="card card-pad profile-id">
+        <div class="profile-avatar-wrap">
+          <button class="profile-avatar-btn" id="avatar-btn" type="button" aria-label="Change profile photo" title="Change profile photo">
+            <%- avatarHtml(me, "avatar-xl") %>
+            <span class="profile-avatar-edit"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-camera"></use></svg></span>
+          </button>
+          <input type="file" id="avatar-file" accept="image/jpeg,image/png,image/webp" hidden>
+          <div class="profile-avatar-actions">
+            <button class="btn btn-ghost btn-sm" id="avatar-remove" type="button" <%= me.avatarUrl ? "" : "hidden" %>>Remove photo</button>
+          </div>
+        </div>
+        <div class="profile-id-text">
+          <h2 style="font-size:22px"><%= me.name %></h2>
+          <p class="muted">@<%= me.username %> ·
+            <% if (me.role === "admin") { %>Adviser<% } else if (me.role === "moderator") { %>Moderator<% } else { %>Student<% } %>
+          </p>
+          <% if (me.bio) { %><p class="small mt-2"><%= me.bio %></p><% } %>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="stat-row">
+          <div class="card stat-card"><b><%= me.points %></b><span>points</span></div>
+          <div class="card stat-card"><b><%= me.streakDays %></b><span>day streak</span></div>
+          <div class="card stat-card"><b><%= me.practiceTaken %></b><span>quizzes taken</span></div>
+          <div class="card stat-card"><b><%= me.cardsReviewed %></b><span>cards reviewed</span></div>
+        </div>
+        <p class="small muted mt-4" style="display:flex; align-items:center; gap:6px">
+          <svg class="icon icon-sm" aria-hidden="true" style="color:var(--coral)"><use href="#i-broadcast"></use></svg>
+          Joined <%= liveCount %> live test<%= liveCount === 1 ? "" : "s" %> — live scores never count toward points.
+        </p>
+      </div>
+
+      <form method="post" action="/profile" class="card card-pad stack" style="gap:var(--sp-3)">
+        <h2 style="font-size:18px">About you</h2>
+        <div class="field">
+          <label for="name">Display name</label>
+          <input class="input" id="name" name="name" value="<%= me.name %>" maxlength="60" required>
+        </div>
+        <div class="field">
+          <label for="bio">Bio <span class="muted">(optional)</span></label>
+          <textarea class="textarea" id="bio" name="bio" maxlength="280" placeholder="Something your classmates should know about you"><%= me.bio || "" %></textarea>
+        </div>
+        <h2 style="font-size:18px" class="mt-4">Social links <span class="muted small" style="font-weight:600">— optional</span></h2>
+        <p class="small muted">Paste a full link or just your @username. These show on your public profile.</p>
+        <div class="links-grid">
+          <div class="field">
+            <label for="link_facebook"><span class="row" style="gap:6px"><svg class="icon icon-sm" aria-hidden="true" style="color:var(--navy)"><use href="#i-facebook"></use></svg> Facebook</span></label>
+            <input class="input" id="link_facebook" name="link_facebook" value="<%= me.links?.facebook || "" %>" placeholder="username or link">
+          </div>
+          <div class="field">
+            <label for="link_instagram"><span class="row" style="gap:6px"><svg class="icon icon-sm" aria-hidden="true" style="color:var(--navy)"><use href="#i-instagram"></use></svg> Instagram</span></label>
+            <input class="input" id="link_instagram" name="link_instagram" value="<%= me.links?.instagram || "" %>" placeholder="@username or link">
+          </div>
+          <div class="field">
+            <label for="link_tiktok"><span class="row" style="gap:6px"><svg class="icon icon-sm" aria-hidden="true" style="color:var(--navy)"><use href="#i-tiktok"></use></svg> TikTok</span></label>
+            <input class="input" id="link_tiktok" name="link_tiktok" value="<%= me.links?.tiktok || "" %>" placeholder="@username or link">
+          </div>
+          <div class="field">
+            <label for="link_x"><span class="row" style="gap:6px"><svg class="icon icon-sm" aria-hidden="true" style="color:var(--navy)"><use href="#i-xcorp"></use></svg> X (Twitter)</span></label>
+            <input class="input" id="link_x" name="link_x" value="<%= me.links?.x || "" %>" placeholder="@username or link">
+          </div>
+          <div class="field">
+            <label for="link_youtube"><span class="row" style="gap:6px"><svg class="icon icon-sm" aria-hidden="true" style="color:var(--navy)"><use href="#i-youtube"></use></svg> YouTube</span></label>
+            <input class="input" id="link_youtube" name="link_youtube" value="<%= me.links?.youtube || "" %>" placeholder="@channel or link">
+          </div>
+          <div class="field">
+            <label for="link_github"><span class="row" style="gap:6px"><svg class="icon icon-sm" aria-hidden="true" style="color:var(--navy)"><use href="#i-github"></use></svg> GitHub</span></label>
+            <input class="input" id="link_github" name="link_github" value="<%= me.links?.github || "" %>" placeholder="username or link">
+          </div>
+        </div>
+        <div class="form-actions mt-4">
+          <button class="btn btn-primary" type="submit">Save profile</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="stack" style="gap:var(--sp-4)">
+      <div class="card card-pad">
+        <h2 style="font-size:18px">Change password</h2>
+        <form method="post" action="/profile/password" class="stack mt-4" style="gap:var(--sp-3)">
+          <div class="field">
+            <label for="current">Current password</label>
+            <input class="input" id="current" name="current" type="password" autocomplete="current-password" required>
+          </div>
+          <div class="field">
+            <label for="next">New password</label>
+            <input class="input" id="next" name="next" type="password" autocomplete="new-password" required>
+            <span class="hint">At least 6 characters.</span>
+          </div>
+          <div class="field">
+            <label for="confirm">Confirm new password</label>
+            <input class="input" id="confirm" name="confirm" type="password" autocomplete="new-password" required>
+          </div>
+          <button class="btn btn-navy" type="submit">Update password</button>
+        </form>
+      </div>
+
+      <div class="card card-pad">
+        <h2 style="font-size:18px">Recent activity</h2>
+        <% if (attempts.length || reviews.length) { %>
+          <div class="stack mt-4" style="gap:10px">
+            <% attempts.forEach(function (a) { %>
+              <p class="small"><b><%= a.quiz?.title || "Quiz" %></b> — <%= a.score %>/<%= a.total %> correct <span class="muted">· <%= fmtDate(a.createdAt) %></span></p>
+            <% }) %>
+            <% reviews.forEach(function (r) { %>
+              <p class="small">Reviewed <b><%= r.deck?.title || "a deck" %></b> — <%= r.known %>/<%= r.total %> known <span class="muted">· <%= fmtDate(r.createdAt) %></span></p>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="muted small mt-2">Take a practice quiz or review a deck — it shows up here.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

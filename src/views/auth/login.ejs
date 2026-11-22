@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="auth-wrap">
+    <div class="auth-side">
+      <img src="/assets/stem-logo.jpeg" alt="" width="88" height="88" class="hero-logo">
+      <h2>Welcome back, Tesla.</h2>
+      <p>Notes, practice quizzes, flashcards and live tests — everything for our section, in one sign-in.</p>
+    </div>
+    <div class="auth-form">
+      <form class="auth-card" method="post" action="/login" novalidate>
+        <input type="hidden" name="next" value="<%= next %>">
+        <div>
+          <h1>Sign in</h1>
+          <p class="muted mt-2 small">Use the username you registered with.</p>
+        </div>
+        <% if (error) { %>
+          <div class="form-error" role="alert">
+            <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+            <span><%= error %></span>
+          </div>
+        <% } %>
+        <div class="field">
+          <label for="username">Username</label>
+          <input class="input" id="username" name="username" value="<%= username %>" autocomplete="username" autocapitalize="none" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Sign in</button>
+        <p class="auth-alt">New to the hub? <a href="/register">Create an account</a></p>
+      </form>
+    </div>
+  </div>
+</div>

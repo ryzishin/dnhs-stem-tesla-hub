@@ -1,0 +1,34 @@
+<div class="container page">
+  <div class="stack" style="gap:var(--sp-4)">
+    <div class="card result-card">
+      <div class="score-ring" style="--pct:<%= total ? Math.round((score / total) * 100) : 0 %>"><i><%= score %>/<%= total %></i></div>
+      <h1 style="margin-top:var(--sp-4)"><%= Math.round((score / Math.max(total, 1)) * 100) %>% on “<%= quizTitle %>”</h1>
+      <p class="muted mt-2">You banked <b>+<%= earned %><%= of ? " of " + of : "" %> points</b> toward the leaderboard.</p>
+      <div class="row mt-6" style="justify-content:center">
+        <a class="btn btn-primary" href="/quiz/<%= quizId %>"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-refresh"></use></svg> Retake</a>
+        <a class="btn btn-outline" href="/leaderboard">See leaderboard</a>
+      </div>
+    </div>
+
+    <h2 style="font-size:20px">Review every item</h2>
+    <div class="stack" style="gap:var(--sp-3)">
+      <% review.forEach(function (r, i) { %>
+        <div class="card review-item">
+          <div class="spread">
+            <span class="q-number">Item <%= i + 1 %></span>
+            <span class="verdict <%= r.correct ? "verdict-ok" : "verdict-bad" %>">
+              <svg class="icon icon-sm" aria-hidden="true"><use href="#i-<%= r.correct ? "check" : "x" %>"></use></svg>
+              <%= r.correct ? "Correct" : "Missed" %>
+            </span>
+          </div>
+          <p class="q-question" style="font-size:16px"><%= r.question %></p>
+          <p class="your-answer">Your answer: <b><%= r.yourAnswer || "—" %></b></p>
+          <% if (!r.correct && r.correctText) { %><p class="your-answer">Correct answer: <b style="color:var(--ok)"><%= r.correctText %></b></p><% } %>
+          <% if (r.explanation) { %>
+            <div class="explanation"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-spark"></use></svg><div><%= r.explanation %></div></div>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>

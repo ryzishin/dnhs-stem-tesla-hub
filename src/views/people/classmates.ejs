@@ -1,0 +1,32 @@
+<div class="container page">
+  <div class="page-head">
+    <div class="page-title">
+      <svg class="icon" style="color:var(--coral)" aria-hidden="true"><use href="#i-users"></use></svg>
+      <h1>Classmates</h1>
+    </div>
+    <span class="chip chip-plain"><%= users.length %> member<%= users.length === 1 ? "" : "s" %></span>
+  </div>
+
+  <% if (users.length) { %>
+    <div class="people-grid">
+      <% users.forEach(function (u) { %>
+        <a class="card card-hover person-card" href="/u/<%= u.username %>">
+          <%- avatarHtml(u) %>
+          <span class="who">
+            <b><%= u.name %></b>
+            <span>
+              <% if (u.role === "admin") { %><span class="chip chip-navy" style="font-size:11px; padding:1px 7px">adviser</span> <% } else if (u.role === "moderator") { %><span class="chip chip-teal" style="font-size:11px; padding:1px 7px">moderator</span> <% } %>
+              <%= u.points %> pts · <%= u.streakDays %>d streak
+            </span>
+          </span>
+        </a>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty">
+      <svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg>
+      <h3>Just you so far</h3>
+      <p>Share the site link — classmates register with a username and appear here.</p>
+    </div>
+  <% } %>
+</div>

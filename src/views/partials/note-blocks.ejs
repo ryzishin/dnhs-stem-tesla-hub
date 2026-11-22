@@ -1,0 +1,29 @@
+<%# partials/note-blocks.ejs — renders a note's blocks. Expects `blocks` in scope. %>
+<% (blocks || []).forEach(function (b) { %>
+  <% if (b.type === "heading") { %>
+    <% if (b.level === 3) { %><h3<%- b.id ? ` id="sec-${b.id}"` : "" %>><%= b.text %></h3><% } else { %><h2<%- b.id ? ` id="sec-${b.id}"` : "" %>><%= b.text %></h2><% } %>
+  <% } else if (b.type === "paragraph") { %>
+    <% if (b.text) { %><p><%= b.text %></p><% } %>
+  <% } else if (b.type === "bullets") { %>
+    <% if (b.items && b.items.length) { %><ul><% b.items.forEach(function (i) { %><li><%= i %></li><% }) %></ul><% } %>
+  <% } else if (b.type === "numbered") { %>
+    <% if (b.items && b.items.length) { %><ol><% b.items.forEach(function (i) { %><li><%= i %></li><% }) %></ol><% } %>
+  <% } else if (b.type === "image") { %>
+    <figure class="note-figure">
+      <img src="<%= b.url %>" alt="<%= b.caption || 'Note illustration' %>" loading="lazy">
+      <% if (b.caption) { %><figcaption><%= b.caption %></figcaption><% } %>
+    </figure>
+  <% } else if (b.type === "callout") { %>
+    <aside class="callout callout-<%= b.variant %>">
+      <svg class="icon" aria-hidden="true"><use href="#i-<%= b.variant === 'warn' ? 'alert' : 'spark' %>"></use></svg>
+      <div><%= b.text %></div>
+    </aside>
+  <% } else if (b.type === "keyterm") { %>
+    <div class="keyterm">
+      <span class="keyterm-word"><%= b.term %></span>
+      <span class="keyterm-def"><%= b.definition %></span>
+    </div>
+  <% } else if (b.type === "divider") { %>
+    <hr class="note-divider">
+  <% } %>
+<% }) %>

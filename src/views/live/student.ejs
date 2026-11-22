@@ -1,0 +1,81 @@
+<div class="container page">
+  <div class="live-stage" id="live-stage">
+    <%# — wait screen (initial) — %>
+    <div id="live-wait" class="card live-wait">
+      <img src="/assets/stem-logo.jpeg" alt="" width="84" height="84">
+      <h1 style="font-size:24px">Live test</h1>
+      <p class="muted" id="live-wait-msg">Waiting for your host to open the first item…</p>
+      <p class="small" id="live-wait-meta" style="color:var(--faint)"></p>
+      <div class="progress-track" style="max-width:280px"><i id="live-wait-bar" style="width:0%"></i></div>
+      <p class="small" style="color:var(--faint)">Keep this page open — answers open one at a time, here.</p>
+    </div>
+
+    <%# — item screen — %>
+    <div id="live-item" class="stack" hidden style="gap:var(--sp-3)">
+      <div class="live-meta">
+        <span class="chip chip-coral" id="live-progress-label">Item 1 of 1</span>
+        <span class="row" style="gap:6px">
+          <span class="chip chip-plain" id="live-attempt-chip" hidden>attempt 1</span>
+          <span class="live-count" id="live-count" hidden><svg class="icon icon-sm" aria-hidden="true"><use href="#i-clock"></use></svg> <span id="live-count-value">—</span></span>
+        </span>
+      </div>
+      <div class="progress-track" aria-hidden="true"><i id="live-progress-bar" style="width:0%"></i></div>
+      <div class="card monitor-q">
+        <p class="q-number" id="live-item-points"></p>
+        <p class="q-question" id="live-question"></p>
+        <div class="stack mt-4" id="live-options" style="gap:10px"></div>
+        <div class="mt-4" id="live-short-wrap" hidden>
+          <input class="input" id="live-short" placeholder="Type your answer…" autocomplete="off">
+          <button class="btn btn-primary mt-2" id="live-short-submit" type="button">Lock in answer</button>
+        </div>
+      </div>
+      <div id="live-feedback" class="live-feedback" hidden></div>
+      <p class="muted small" id="live-answered-note" hidden>You've answered this item — waiting for the host.</p>
+    </div>
+
+    <%# — submitted screen (auto-submit or finished early, session still running) — %>
+    <div id="live-submitted" class="card card-pad live-result" hidden>
+      <div class="modal-icon is-amber" id="live-submitted-icon" style="margin-inline:auto"><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg></div>
+      <h2 style="font-size:22px" id="live-submitted-title">Your test was submitted</h2>
+      <p class="muted mt-2" id="live-submitted-msg">You hit the warning limit, so your answers were locked in as-is. Your score still counts — but you can't answer more items.</p>
+      <p class="mt-3" id="live-submitted-score" hidden style="text-align:center"><span class="chip chip-ok"></span></p>
+      <p class="small" style="color:var(--faint)">You can ask the adviser for another attempt. They'll decide — so make it count.</p>
+      <textarea class="textarea mt-3" id="retry-reason" rows="2" maxlength="200" placeholder="Tell the adviser why (optional) — e.g. “my phone died mid-test”"></textarea>
+      <div class="form-actions mt-3" style="justify-content:center">
+        <button class="btn btn-primary" id="retry-ask" type="button">Ask for another attempt</button>
+      </div>
+      <p class="small mt-3" id="retry-status" style="text-align:center; color:var(--muted)"></p>
+    </div>
+
+    <%# — result screen — %>
+    <div id="live-result" class="card card-pad live-result" hidden>
+      <h2 style="font-size:22px">Test finished</h2>
+      <p class="muted mt-2" id="live-result-sub">Here's how the section finished. Live scores don't count toward the leaderboard.</p>
+      <div class="table-wrap standings-table">
+        <table class="data" id="live-result-table">
+          <thead><tr><th>#</th><th>Name</th><th>Score</th></tr></thead>
+          <tbody id="live-result-body"></tbody>
+        </table>
+      </div>
+      <a class="btn btn-primary mt-4" href="/hub">Back to the hub</a>
+    </div>
+
+    <%# — removed screen — %>
+    <div id="live-removed" class="live-removed" hidden>
+      <svg class="icon" style="width:36px;height:36px" aria-hidden="true"><use href="#i-alert"></use></svg>
+      <h2 style="font-size:22px">You were removed from this test</h2>
+      <p style="color:var(--bad); font-weight:600">The adviser removed you. Only they can let you back in — ask them for a re-attempt.</p>
+      <a class="btn btn-outline" href="/hub">Back to the hub</a>
+    </div>
+
+    <div id="live-error" class="form-error" hidden role="alert">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+      <span id="live-error-msg"></span>
+    </div>
+
+    <%# — fullscreen nudge (the browser may refuse auto-fullscreen without a tap) — %>
+    <button class="btn btn-navy fs-cta" id="fs-cta" type="button" hidden>
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-expand"></use></svg> Go fullscreen
+    </button>
+  </div>
+</div>

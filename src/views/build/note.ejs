@@ -1,0 +1,57 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/build">Builders</a>
+    <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg>
+    <span>Note editor</span>
+  </nav>
+
+  <div class="builder-bar" id="builder-bar">
+    <button class="btn btn-outline btn-sm" id="editor-back" type="button">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-left"></use></svg> Back
+    </button>
+    <span class="dirty-note" id="dirty-note" hidden><svg class="icon icon-sm" aria-hidden="true"><use href="#i-spark"></use></svg> Unsaved changes</span>
+    <span class="spacer"></span>
+    <label class="check" style="font-size:14.5px"><input type="checkbox" id="note-published"> Published</label>
+    <button class="btn btn-primary" id="editor-save" type="button">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"></use></svg> Save note
+    </button>
+  </div>
+  <p class="small" id="save-status" style="color:var(--faint); min-height:20px"></p>
+
+  <div class="form-row">
+    <div class="field" style="flex:2 1 320px">
+      <label for="note-title">Title</label>
+      <input class="input" id="note-title" maxlength="120" value="<%= note.title %>">
+    </div>
+    <div class="field">
+      <label for="note-blurb">Short description</label>
+      <input class="input" id="note-blurb" maxlength="200" value="<%= note.blurb || "" %>" placeholder="One line classmates see on the subject page">
+    </div>
+  </div>
+
+  <h2 style="font-size:20px">Content blocks</h2>
+  <div class="block-list" id="block-list"></div>
+
+  <div class="builder-toolbar">
+    <div class="builder-toolbar-label">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-plus"></use></svg> Add a block
+    </div>
+    <div class="row" style="gap:8px" id="block-add">
+      <button class="btn btn-outline tool-btn" type="button" data-add="heading"><svg class="icon" aria-hidden="true"><use href="#i-heading"></use></svg> Heading</button>
+      <button class="btn btn-outline tool-btn" type="button" data-add="paragraph"><svg class="icon" aria-hidden="true"><use href="#i-paragraph"></use></svg> Paragraph</button>
+      <button class="btn btn-outline tool-btn" type="button" data-add="bullets"><svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg> Bullets</button>
+      <button class="btn btn-outline tool-btn" type="button" data-add="numbered"><svg class="icon" aria-hidden="true"><use href="#i-numbered"></use></svg> Numbered</button>
+      <button class="btn btn-outline tool-btn" type="button" data-add="keyterm"><svg class="icon" aria-hidden="true"><use href="#i-keyterm"></use></svg> Key term</button>
+      <button class="btn btn-outline tool-btn" type="button" data-add="callout"><svg class="icon" aria-hidden="true"><use href="#i-callout"></use></svg> Callout</button>
+      <button class="btn btn-outline tool-btn" type="button" data-add="image"><svg class="icon" aria-hidden="true"><use href="#i-image"></use></svg> Image (link)</button>
+      <button class="btn btn-outline tool-btn" type="button" data-add="divider"><svg class="icon" aria-hidden="true"><use href="#i-divider"></use></svg> Divider</button>
+    </div>
+    <p class="small muted" id="block-stats" style="margin-top:8px"></p>
+  </div>
+
+  <h2 style="font-size:20px">Sources <span class="muted small" style="font-weight:600">— shown at the bottom of the note</span></h2>
+  <div class="stack" id="source-list" style="gap:8px"></div>
+  <button class="btn btn-outline" id="source-add" type="button" style="align-self:flex-start">
+    <svg class="icon icon-sm" aria-hidden="true"><use href="#i-plus"></use></svg> Add source
+  </button>
+</div>

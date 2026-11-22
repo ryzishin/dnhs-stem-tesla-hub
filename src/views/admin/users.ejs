@@ -1,0 +1,62 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/admin">Admin</a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span>People & roles</span>
+  </nav>
+
+  <div class="page-head">
+    <div class="page-title">
+      <svg class="icon" style="color:var(--coral)" aria-hidden="true"><use href="#i-users"></use></svg>
+      <h1 style="font-size:26px">People & roles</h1>
+    </div>
+  </div>
+  <p class="muted">
+    <b>Students</b> study and earn points. <b>Moderators</b> build notes, practice quizzes and flashcards in the subjects you assign — nothing else. <b>Live tests, roles and passwords are yours alone</b> (the adviser). Pick a role, tick their subjects, then press <b>Save</b> on the row to confirm.
+  </p>
+
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Member</th><th>Role</th><th>Builds in</th><th>Joined</th><th></th></tr></thead>
+      <tbody>
+        <% users.forEach(function (u) { %>
+          <tr data-row="<%= u._id %>">
+            <td>
+              <span class="row" style="flex-wrap:nowrap"><%- avatarHtml(u, "avatar-sm") %>
+                <span><b><%= u.name %></b><br><span class="muted small">@<%= u.username %></span></span>
+              </span>
+            </td>
+            <td>
+              <div class="role-cell">
+                <select class="select js-role" data-id="<%= u._id %>" data-name="<%= u.name %>" data-original="<%= u.role %>">
+                  <option value="student" <%= u.role === "student" ? "selected" : "" %>>Student</option>
+                  <option value="moderator" <%= u.role === "moderator" ? "selected" : "" %>>Moderator</option>
+                  <option value="admin" <%= u.role === "admin" ? "selected" : "" %>>Admin (adviser)</option>
+                </select>
+                <button class="btn btn-primary btn-sm js-save-role" data-id="<%= u._id %>" type="button" hidden>Save role</button>
+              </div>
+            </td>
+            <td>
+              <div class="subject-picker js-subjects" data-id="<%= u._id %>" <%= u.role !== "moderator" ? "hidden" : "" %>>
+                <% subjects.forEach(function (s) { %>
+                  <label class="check">
+                    <input type="checkbox" value="<%= s._id %>" <%= (u.moderatedSubjects || []).some(function (m) { return m._id ? m._id.toString() === s._id.toString() : m.toString() === s._id.toString(); }) ? "checked" : "" %>>
+                    <%= s.name %>
+                  </label>
+                <% }) %>
+              </div>
+              <% if (u.role !== "moderator") { %><span class="muted small js-no-scope">—</span><% } %>
+            </td>
+            <td class="muted small"><%= fmtDate(u.createdAt) %></td>
+            <td class="t-right">
+              <% if (u.role !== "admin") { %>
+                <button class="btn btn-outline btn-sm js-reset-pw" data-id="<%= u._id %>" data-name="<%= u.name %>" type="button">Reset password</button>
+                <button class="btn btn-danger btn-sm js-delete-user" data-id="<%= u._id %>" data-name="<%= u.name %>" type="button">Delete</button>
+              <% } else { %>
+                <span class="muted small">protected</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>

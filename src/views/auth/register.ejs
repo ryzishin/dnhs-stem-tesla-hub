@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="auth-wrap">
+    <div class="auth-side">
+      <img src="/assets/stem-logo.jpeg" alt="" width="88" height="88" class="hero-logo">
+      <h2>Join the Tesla section hub.</h2>
+      <p>Register once — then practice quizzes, flashcards and live tests are all yours.</p>
+    </div>
+    <div class="auth-form">
+      <form class="auth-card" method="post" action="/register" novalidate>
+        <div>
+          <h1>Create account</h1>
+          <p class="muted mt-2 small">Open to every Tesla STEM student.</p>
+        </div>
+        <% if (!allowRegistration) { %>
+          <div class="form-error" role="alert">
+            <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+            <span>Registration is closed right now. Ask your adviser to enable it in Admin → Settings.</span>
+          </div>
+        <% } %>
+        <% if (error) { %>
+          <div class="form-error" role="alert">
+            <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+            <span><%= error %></span>
+          </div>
+        <% } %>
+        <div class="field">
+          <label for="name">Display name</label>
+          <input class="input" id="name" name="name" value="<%= form.name || '' %>" maxlength="60" autocomplete="name" required>
+          <span class="hint">Shown on the leaderboard and your profile.</span>
+        </div>
+        <div class="field">
+          <label for="username">Username</label>
+          <input class="input" id="username" name="username" value="<%= form.username || '' %>" maxlength="20" autocomplete="username" autocapitalize="none" required>
+          <span class="hint">3–20 characters — lowercase letters, numbers, dots or dashes.</span>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input class="input" id="password" name="password" type="password" autocomplete="new-password" required>
+          <span class="hint">At least 6 characters.</span>
+        </div>
+        <div class="field">
+          <label for="confirm">Confirm password</label>
+          <input class="input" id="confirm" name="confirm" type="password" autocomplete="new-password" required>
+        </div>
+        <button class="btn btn-primary" type="submit" <%= !allowRegistration ? "disabled" : "" %>>Create account</button>
+        <p class="auth-alt">Already registered? <a href="/login">Sign in</a></p>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="container page">
+  <div class="hub-greet">
+    <div class="hub-greet-top">
+      <div>
+        <p class="kicker">The Hub</p>
+        <h1 class="mt-2">Hey, <%= me.name.split(" ")[0] %>.</h1>
+        <p class="muted mt-2">Pick a subject to keep your streak alive.</p>
+      </div>
+      <% if (me.role === "admin") { %>
+        <a href="/admin" class="btn btn-navy">Admin panel</a>
+      <% } %>
+    </div>
+
+    <% if (activeSession) { %>
+      <a class="live-banner" href="/live" style="color:#fff">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span>
+          <b>Live test <%= activeSession.status === "lobby" ? "starting soon" : "is running" %></b>
+          <p><%= activeSession.quiz?.title || "Live quiz" %> · hosted by <%= activeSession.host?.name || "your host" %><%= activeSession.subject ? " · " + activeSession.subject.name : "" %></p>
+        </span>
+        <span class="btn btn-primary btn-sm">Join now</span>
+      </a>
+    <% } %>
+  </div>
+
+  <div class="stat-row">
+    <div class="card stat-card"><b><%= me.points %></b><span>total points</span></div>
+    <div class="card stat-card"><b><%= me.weeklyPoints %></b><span>this week</span></div>
+    <div class="card stat-card"><b><%= me.streakDays %></b><span>day streak</span></div>
+  </div>
+
+  <% if (subjects.length) { %>
+    <div class="subject-grid">
+      <% subjects.forEach(function (s, i) { %>
+        <a class="card card-hover subject-card" href="/s/<%= s.slug %>">
+          <span class="subject-tile tile-<%= s.color %>"><svg class="icon" aria-hidden="true"><use href="#i-<%= s.icon %>"></use></svg></span>
+          <span>
+            <h3><%= s.name %></h3>
+            <p><%= s.blurb || "Notes, quizzes and flashcards." %></p>
+            <span class="subject-meta">
+              <span class="chip chip-plain"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-book"></use></svg><%= plural(counts[i].notes, "note") %></span>
+              <span class="chip chip-plain"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-quiz"></use></svg><%= plural(counts[i].quizzes, "quiz") %></span>
+              <span class="chip chip-plain"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-cards"></use></svg><%= plural(counts[i].decks, "deck") %></span>
+            </span>
+          </span>
+        </a>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty">
+      <svg class="icon" aria-hidden="true"><use href="#i-atom"></use></svg>
+      <h3>No subjects yet</h3>
+      <p>The adviser adds subjects in the Admin panel. Once they exist, moderators can start building notes, quizzes and decks.</p>
+      <% if (currentUser.role === "admin") { %><a href="/admin/subjects" class="btn btn-primary">Add the first subject</a><% } %>
+    </div>
+  <% } %>
+</div>

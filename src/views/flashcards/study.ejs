@@ -1,0 +1,34 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/s/<%= deck.subject.slug %>"><%= deck.subject.name %></a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span><%= deck.title %></span>
+  </nav>
+
+  <div id="deck-stage" class="deck-stage"
+       data-finish-url="/deck/<%= deck.id %>/finish"
+       data-subject-url="/s/<%= deck.subject.slug %>">
+    <div class="deck-meta">
+      <h1 style="font-size:clamp(22px,4vw,28px)"><%= deck.title %></h1>
+      <% if (deck.blurb) { %><p class="muted mt-2"><%= deck.blurb %></p><% } %>
+    </div>
+
+    <div class="progress-track" aria-hidden="true"><i id="deck-progress" style="width:0%"></i></div>
+    <p class="deck-progress" id="deck-progress-text" aria-live="polite">Card 1 of <%= cards.length %></p>
+
+    <div class="flip-scene" id="flip-card" role="button" tabindex="0" aria-label="Card — press Enter or Space to flip">
+      <div class="flip-inner">
+        <div class="flip-face flip-front"><span id="card-front"><%= cards[0].front %></span></div>
+        <div class="flip-face flip-back"><span id="card-back"><%= cards[0].back %></span></div>
+      </div>
+    </div>
+    <p class="flip-hint">Tap the card to flip</p>
+
+    <div class="deck-actions">
+      <button class="btn btn-outline" id="btn-again" type="button">
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#i-refresh"></use></svg> Review again
+      </button>
+      <button class="btn btn-navy" id="btn-known" type="button">
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"></use></svg> I knew it
+      </button>
+    </div>
+  </div>
+</div>

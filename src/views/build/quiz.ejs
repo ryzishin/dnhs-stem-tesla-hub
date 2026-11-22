@@ -1,0 +1,64 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/build">Builders</a>
+    <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg>
+    <span>Quiz editor · <%= quiz.mode === "live" ? "Live" : "Practice" %></span>
+  </nav>
+
+  <div class="builder-bar" id="builder-bar">
+    <button class="btn btn-outline btn-sm" id="editor-back" type="button">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-left"></use></svg> Back
+    </button>
+    <span class="dirty-note" id="dirty-note" hidden><svg class="icon icon-sm" aria-hidden="true"><use href="#i-spark"></use></svg> Unsaved changes</span>
+    <span class="spacer"></span>
+    <label class="check" style="font-size:14.5px"><input type="checkbox" id="quiz-published"> Published</label>
+    <button class="btn btn-primary" id="editor-save" type="button">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"></use></svg> Save quiz
+    </button>
+  </div>
+  <p class="small" id="save-status" style="color:var(--faint); min-height:20px"></p>
+
+  <div class="form-row">
+    <div class="field" style="flex:2 1 320px">
+      <label for="quiz-title">Title</label>
+      <input class="input" id="quiz-title" maxlength="120" value="<%= quiz.title %>">
+    </div>
+    <div class="field">
+      <label for="quiz-blurb">Short description</label>
+      <input class="input" id="quiz-blurb" maxlength="200" value="<%= quiz.blurb || "" %>">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <% if (quiz.mode === "practice") { %>
+      <div class="field">
+        <label for="quiz-time">Time limit (minutes, 0 = none)</label>
+        <input class="input" id="quiz-time" type="number" min="0" max="120" value="<%= quiz.timeLimitMin || 0 %>">
+      </div>
+    <% } else { %>
+      <div class="field">
+        <label for="quiz-auto">Auto-advance (seconds per item, 0 = host advances manually)</label>
+        <input class="input" id="quiz-auto" type="number" min="0" max="300" value="<%= quiz.autoAdvanceSec || 0 %>">
+      </div>
+    <% } %>
+  </div>
+
+  <div class="builder-toolbar">
+    <div class="builder-toolbar-label">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-quiz"></use></svg> Add an item
+    </div>
+    <div class="row" style="gap:8px">
+      <button class="btn btn-outline tool-btn" type="button" id="item-add-mcq">
+        <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg> Multiple choice
+      </button>
+      <button class="btn btn-outline tool-btn" type="button" id="item-add-tf">
+        <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg> True / False
+      </button>
+      <button class="btn btn-outline tool-btn" type="button" id="item-add-short">
+        <svg class="icon" aria-hidden="true"><use href="#i-edit"></use></svg> Short answer
+      </button>
+    </div>
+    <p class="small muted" id="item-stats" style="margin-top:8px"></p>
+  </div>
+  <div class="block-list" id="item-list"></div>
+</div>

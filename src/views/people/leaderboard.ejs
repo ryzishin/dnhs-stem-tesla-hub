@@ -1,0 +1,83 @@
+<div class="container page">
+  <div class="page-head">
+    <div class="page-title">
+      <svg class="icon" style="color:var(--amber)" aria-hidden="true"><use href="#i-trophy"></use></svg>
+      <h1>Leaderboard</h1>
+    </div>
+    <span class="chip chip-plain">Live tests never count — practice and review only</span>
+  </div>
+
+  <section class="page" style="gap:var(--sp-3)">
+    <div class="section-title-row">
+      <svg class="icon" aria-hidden="true"><use href="#i-flame"></use></svg>
+      <h2 style="font-size:20px">This week</h2>
+      <span class="chip chip-plain" title="Weekly scores clear every Monday, same moment for everyone">
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#i-refresh"></use></svg>
+        resets in <b data-countdown="<%= resetAt %>">…</b>
+      </span>
+    </div>
+    <% if (weekly.length) { %>
+      <div class="podium">
+        <% weekly.slice(0, 3).forEach(function (u, i) { %>
+          <div class="card podium-card">
+            <span class="medal medal-<%= i + 1 %>"><%= i + 1 %></span>
+            <a href="/u/<%= u.username %>" class="stack" style="align-items:center; color:var(--ink)">
+              <%- avatarHtml(u, "avatar-lg") %>
+              <b><%= u.name %></b>
+              <span class="chip chip-coral"><%= u.weeklyPoints %> pts this week</span>
+            </a>
+          </div>
+        <% }) %>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>#</th><th>Member</th><th>Weekly</th><th>Streak</th><th>All-time</th></tr></thead>
+          <tbody>
+            <% weekly.forEach(function (u, i) { %>
+              <tr class="<%= u._id.toString() === meId ? "is-me" : "" %>">
+                <td><b><%= i + 1 %></b></td>
+                <td><a href="/u/<%= u.username %>" style="color:var(--ink); font-weight:700"><%= u.name %></a> <span class="muted">@<%= u.username %></span></td>
+                <td><b><%= u.weeklyPoints %></b></td>
+                <td><%= u.streakDays %>d</td>
+                <td><%= u.points %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="empty">
+        <svg class="icon" aria-hidden="true"><use href="#i-trophy"></use></svg>
+        <h3>Nobody has scored this week</h3>
+        <p>Finish a practice quiz or review a flashcard deck to put your name up here.</p>
+        <a href="/hub" class="btn btn-primary">Pick a subject</a>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="page" style="gap:var(--sp-3)">
+    <div class="section-title-row">
+      <svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>
+      <h2 style="font-size:20px">All-time</h2>
+    </div>
+    <% if (alltime.length) { %>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>#</th><th>Member</th><th>Points</th><th>Streak</th></tr></thead>
+          <tbody>
+            <% alltime.forEach(function (u, i) { %>
+              <tr class="<%= u._id.toString() === meId ? "is-me" : "" %>">
+                <td><b><%= i + 1 %></b></td>
+                <td><a href="/u/<%= u.username %>" style="color:var(--ink); font-weight:700"><%= u.name %></a> <span class="muted">@<%= u.username %></span></td>
+                <td><b><%= u.points %></b></td>
+                <td><%= u.streakDays %>d</td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="empty"><p>No points earned yet. Be the first.</p></div>
+    <% } %>
+  </section>
+</div>

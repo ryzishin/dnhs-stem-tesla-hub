@@ -1,0 +1,89 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/host">Host</a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span><%= quiz.title %></span>
+  </nav>
+
+  <div class="page-head">
+    <div class="page-title">
+      <span class="chip <%= session.status === "active" ? "chip-coral" : session.status === "lobby" ? "chip-navy" : "chip-plain" %>" id="mon-status">
+        <span class="badge-dot"></span> <span id="mon-status-text"><%= session.status %></span>
+      </span>
+      <h1 style="font-size:24px"><%= quiz.title %></h1>
+    </div>
+    <div class="row">
+      <a class="btn btn-outline btn-sm" href="/host/monitor/<%= session.id %>/export.csv">
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#i-download"></use></svg> Export CSV
+      </a>
+    </div>
+  </div>
+
+  <div class="host-grid">
+    <div class="stack" style="gap:var(--sp-3)">
+      <div class="card monitor-q">
+        <div class="spread">
+          <span class="q-number" id="mon-progress">—</span>
+          <span class="row" style="gap:6px">
+            <% if (session.autoAdvanceSec > 0) { %>
+              <span class="live-count" id="mon-count"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-clock"></use></svg> <span id="mon-count-value">—</span></span>
+            <% } %>
+          </span>
+        </div>
+        <p class="q-question mt-2" id="mon-question">Waiting to start…</p>
+        <div class="stack mt-4" id="mon-options" style="gap:8px"></div>
+        <div class="item-progress mt-4" id="mon-item-progress" hidden>
+          <div class="spread small" style="font-weight:600">
+            <span id="mon-item-progress-text">0 of 0 answered</span>
+            <span class="muted" id="mon-item-progress-note">still open</span>
+          </div>
+          <div class="progress-track mt-2"><i id="mon-item-progress-bar" style="width:0%"></i></div>
+        </div>
+        <div class="form-error mt-4" id="mon-answer-note" hidden>Students who answer late miss this item — that's the deal.</div>
+      </div>
+
+      <div class="monitor-controls">
+        <% if (session.status !== "ended") { %>
+          <button class="btn btn-outline" id="ctl-prev" type="button" hidden><svg class="icon icon-sm" aria-hidden="true"><use href="#i-left"></use></svg> Prev</button>
+          <button class="btn btn-primary" id="ctl-next" type="button" hidden>Next item <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg></button>
+          <button class="btn btn-primary" id="ctl-start" type="button" <%= session.status !== "lobby" ? "hidden" : "" %>><svg class="icon icon-sm" aria-hidden="true"><use href="#i-play"></use></svg> Open item 1 — start</button>
+          <button class="btn btn-danger" id="ctl-end" type="button"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-stop"></use></svg> End test</button>
+        <% } %>
+      </div>
+
+      <div class="card card-pad">
+        <h3 style="font-size:15px">Item strip</h3>
+        <div class="strip-scroll mt-2" id="mon-strip"></div>
+      </div>
+    </div>
+
+    <div class="stack" style="gap:var(--sp-3)">
+      <div class="card card-pad" style="padding-bottom:var(--sp-2)">
+        <div class="spread">
+          <h3 style="font-size:15px">Standings</h3>
+          <span class="chip chip-plain" id="mon-participants">0 joined</span>
+        </div>
+        <div class="table-wrap mt-2" style="border:0">
+          <table class="data standings-live">
+            <thead><tr><th>#</th><th>Name</th><th>Score</th><th>Ans</th><th>Warn</th><th></th></tr></thead>
+            <tbody id="mon-standings"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card card-pad" id="retry-panel" <%= retryReqs.length ? "" : "hidden" %>>
+        <div class="spread">
+          <h3 style="font-size:15px; display:flex; align-items:center; gap:8px"><svg class="icon icon-sm" aria-hidden="true" style="color:var(--amber)"><use href="#i-refresh"></use></svg> Re-attempt requests</h3>
+          <span class="chip chip-amber" id="retry-count"><%= retryReqs.length %> waiting</span>
+        </div>
+        <div class="stack mt-3" id="retry-list" style="gap:8px"></div>
+        <p class="small muted mt-2">A student whose test was auto-submitted (or who finished early) can ask for another try. Approve to reset their score and let them back in — you decide case by case.</p>
+      </div>
+
+      <div class="card card-pad">
+        <h3 style="font-size:15px">Warnings feed</h3>
+        <div class="warn-feed mt-2" id="mon-warns">
+          <p class="muted small">Anti-cheat events will appear here as they happen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

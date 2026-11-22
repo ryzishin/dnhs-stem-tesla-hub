@@ -1,0 +1,42 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/build">Builders</a>
+    <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg>
+    <span>Deck editor</span>
+  </nav>
+
+  <div class="builder-bar" id="builder-bar">
+    <button class="btn btn-outline btn-sm" id="editor-back" type="button">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-left"></use></svg> Back
+    </button>
+    <span class="dirty-note" id="dirty-note" hidden><svg class="icon icon-sm" aria-hidden="true"><use href="#i-spark"></use></svg> Unsaved changes</span>
+    <span class="spacer"></span>
+    <label class="check" style="font-size:14.5px"><input type="checkbox" id="deck-published"> Published</label>
+    <button class="btn btn-primary" id="editor-save" type="button">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"></use></svg> Save deck
+    </button>
+  </div>
+  <p class="small" id="save-status" style="color:var(--faint); min-height:20px"></p>
+
+  <div class="form-row">
+    <div class="field" style="flex:2 1 320px">
+      <label for="deck-title">Title</label>
+      <input class="input" id="deck-title" maxlength="120" value="<%= deck.title %>">
+    </div>
+    <div class="field">
+      <label for="deck-blurb">Short description</label>
+      <input class="input" id="deck-blurb" maxlength="200" value="<%= deck.blurb || "" %>">
+    </div>
+  </div>
+
+  <div class="builder-toolbar">
+    <div class="builder-toolbar-label">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#i-cards"></use></svg> Cards
+      <span class="muted small" style="font-weight:600" id="deck-count"></span>
+    </div>
+    <button class="btn btn-primary tool-btn" id="card-add" type="button">
+      <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg> Add card
+    </button>
+  </div>
+  <div class="stack" id="card-list" style="gap:var(--sp-3)"></div>
+</div>

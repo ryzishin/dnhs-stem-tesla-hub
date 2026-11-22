@@ -1,0 +1,50 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/classmates">Classmates</a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span><%= person.name %></span>
+  </nav>
+
+  <div class="profile-grid">
+    <div class="stack" style="gap:var(--sp-4)">
+      <div class="card card-pad profile-id">
+        <div class="profile-avatar-wrap" style="pointer-events:none">
+          <div class="profile-avatar-btn" style="cursor:default">
+            <%- avatarHtml(person, "avatar-xl") %>
+          </div>
+        </div>
+        <div class="profile-id-text">
+          <h1 style="font-size:24px"><%= person.name %></h1>
+          <p class="muted">@<%= person.username %> ·
+            <% if (person.role === "admin") { %>Adviser<% } else if (person.role === "moderator") { %>Moderator<% } else { %>Student<% } %>
+          </p>
+          <% if (person.bio) { %><p class="mt-2"><%= person.bio %></p><% } %>
+          <% if (socialHtml(person)) { %><div class="mt-3"><%- socialHtml(person) %></div><% } %>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="stat-row">
+          <div class="card stat-card"><b><%= person.points %></b><span>points</span></div>
+          <div class="card stat-card"><b><%= person.streakDays %></b><span>day streak</span></div>
+          <div class="card stat-card"><b><%= person.practiceTaken %></b><span>quizzes taken</span></div>
+          <div class="card stat-card"><b><%= person.cardsReviewed %></b><span>cards reviewed</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-pad">
+      <h2 style="font-size:18px">Recent activity</h2>
+      <% if (attempts.length || reviews.length) { %>
+        <div class="stack mt-4" style="gap:10px">
+          <% attempts.forEach(function (a) { %>
+            <p class="small"><b><%= a.quiz?.title || "Quiz" %></b> — <%= a.score %>/<%= a.total %> correct <span class="muted">· <%= fmtDate(a.createdAt) %></span></p>
+          <% }) %>
+          <% reviews.forEach(function (r) { %>
+            <p class="small">Reviewed <b><%= r.deck?.title || "a deck" %></b> — <%= r.known %>/<%= r.total %> known <span class="muted">· <%= fmtDate(r.createdAt) %></span></p>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="muted small mt-2">Nothing here yet.</p>
+      <% } %>
+    </div>
+  </div>
+</div>

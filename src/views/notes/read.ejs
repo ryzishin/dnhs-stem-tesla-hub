@@ -1,0 +1,70 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/hub">Hub</a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg>
+    <a href="/s/<%= note.subject.slug %>"><%= note.subject.name %></a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span><%= note.title %></span>
+  </nav>
+
+  <div class="note-layout">
+    <article class="note-body">
+      <div class="row" style="justify-content:space-between">
+        <span class="chip chip-<%= note.subject.color %>"><%= note.subject.name %></span>
+        <% if (!note.published) { %><span class="chip chip-amber">Draft — only builders can see this</span><% } %>
+        <% if (canEdit) { %>
+          <a class="btn btn-outline btn-sm" href="/build/notes/<%= note.id %>">
+            <svg class="icon icon-sm" aria-hidden="true"><use href="#i-edit"></use></svg> Edit
+          </a>
+        <% } %>
+      </div>
+      <h1 style="margin-top:var(--sp-3); font-size:clamp(24px,4.5vw,34px)"><%= note.title %></h1>
+      <% if (note.blurb) { %><p class="muted" style="margin-top:var(--sp-2)"><%= note.blurb %></p><% } %>
+      <%# — mobile mini-TOC (collapsible); the desktop version lives in the side rail — %>
+      <details class="note-toc-inline" id="note-toc-inline" hidden>
+        <summary>On this page</summary>
+        <ol class="note-toc-list" id="note-toc-list-inline"></ol>
+      </details>
+      <div class="mt-4">
+        <%- include("../partials/note-blocks", { blocks: note.blocks }) %>
+      </div>
+    </article>
+
+    <aside class="note-aside">
+      <nav class="note-toc card card-pad" id="note-toc" hidden aria-label="Sections of this note">
+        <h2 style="font-size:15px; display:flex; align-items:center; gap:8px">
+          <svg class="icon icon-sm" aria-hidden="true"><use href="#i-list"></use></svg> On this page
+        </h2>
+        <ol class="note-toc-list mt-3" id="note-toc-list"></ol>
+      </nav>
+
+      <div class="sources-panel card card-pad">
+      <h2 style="font-size:16px; display:flex; align-items:center; gap:8px">
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#i-key"></use></svg> Where this comes from
+      </h2>
+      <% if (note.sources && note.sources.length) { %>
+        <div class="mt-4">
+          <% note.sources.forEach(function (s) { %>
+            <div class="source-item">
+              <svg class="icon" aria-hidden="true"><use href="#i-external"></use></svg>
+              <span>
+                <% if (s.url) { %><a href="<%= s.url %>" target="_blank" rel="noopener"><%= s.label || s.url %></a><% } else { %><span><%= s.label %></span><% } %>
+              </span>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="muted small mt-4">No sources listed for this note yet. Editors can add them in the builder — good notes always say where they came from.</p>
+      <% } %>
+      </div>
+    </aside>
+  </div>
+
+  <% if (prev || next) { %>
+    <div class="note-pager">
+      <% if (prev) { %>
+        <a class="btn btn-outline" href="/notes/<%= prev.id %>"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-left"></use></svg> <%= prev.title %></a>
+      <% } else { %><span></span><% } %>
+      <% if (next) { %>
+        <a class="btn btn-outline" href="/notes/<%= next.id %>"><%= next.title %> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg></a>
+      <% } %>
+    </div>
+  <% } %>
+</div>

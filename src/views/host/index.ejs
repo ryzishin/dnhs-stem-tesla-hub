@@ -1,0 +1,80 @@
+<div class="container page">
+  <div class="page-head">
+    <div class="page-title">
+      <svg class="icon" style="color:var(--coral)" aria-hidden="true"><use href="#i-megaphone"></use></svg>
+      <h1>Host a live test</h1>
+    </div>
+  </div>
+  <p class="muted">Live tests are yours alone — moderators build the practice content, you run the in-class sessions. Pick a live quiz, start the session, and your section joins at <a href="/live">/live</a>. The server scores every answer; you approve re-attempts when students ask.</p>
+
+  <div class="card card-pad">
+    <div class="spread">
+      <h3 style="font-size:15px; display:flex; align-items:center; gap:8px"><svg class="icon icon-sm" aria-hidden="true" style="color:var(--teal)"><use href="#i-shield"></use></svg> Anti-cheat for new sessions</h3>
+      <a class="btn btn-ghost btn-sm" href="/admin/settings">Change in Settings</a>
+    </div>
+    <div class="row mt-2" style="gap:8px">
+      <span class="chip <%= antiCheat.tabWarning ? "chip-teal" : "chip-plain" %>"><%= antiCheat.tabWarning ? antiCheat.warningsCap + " warnings → auto-submit" : "leave detection off" %></span>
+      <span class="chip <%= antiCheat.fullscreen ? "chip-teal" : "chip-plain" %>"><%= antiCheat.fullscreen ? "fullscreen enforced" : "fullscreen off" %></span>
+      <span class="chip <%= antiCheat.blockCopy ? "chip-teal" : "chip-plain" %>"><%= antiCheat.blockCopy ? "copy blocked" : "copy allowed" %></span>
+    </div>
+    <p class="small muted mt-3">One attempt per student. Re-attempts only happen when you approve a student's request during the session.</p>
+  </div>
+
+  <% if (liveQuizzes.length) { %>
+    <div class="grid grid-2">
+      <% liveQuizzes.forEach(function (q) { %>
+        <div class="card start-card">
+          <div class="row">
+            <h3 style="font-size:17px"><%= q.title %></h3>
+            <span class="chip chip-plain" style="margin-left:auto"><%= q.items.length %> items</span>
+          </div>
+          <% if (q.blurb) { %><p class="muted small"><%= q.blurb %></p><% } %>
+          <p class="small" style="color:var(--faint)">
+            <%= q.autoAdvanceSec ? "Auto-advance: " + q.autoAdvanceSec + "s per item" : "Manual advance — you open each item" %>
+          </p>
+          <div class="form-actions">
+            <button class="btn btn-primary js-start-live" data-quiz-id="<%= q._id %>" type="button">
+              <svg class="icon icon-sm" aria-hidden="true"><use href="#i-play"></use></svg> Start session
+            </button>
+            <a class="btn btn-outline" href="/build/quiz/<%= q._id %>">Edit items</a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty">
+      <svg class="icon" aria-hidden="true"><use href="#i-broadcast"></use></svg>
+      <h3>No live quizzes yet</h3>
+      <p>Build a quiz in the Build tab and switch its type to “Live”, then come back here to host it.</p>
+      <a href="/build" class="btn btn-primary">Go to builders</a>
+    </div>
+  <% } %>
+
+  <% if (sessions.length) { %>
+    <h2 style="font-size:20px">Your recent sessions</h2>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Quiz</th><th>Subject</th><th>Started</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <% sessions.forEach(function (s) { %>
+            <tr>
+              <td><b><%= s.quiz?.title || "—" %></b></td>
+              <td><%= s.subject?.name || "—" %></td>
+              <td><%= fmtDate(s.createdAt, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) %></td>
+              <td>
+                <% if (s.status === "ended") { %><span class="chip chip-plain">ended</span>
+                <% } else if (s.status === "active") { %><span class="chip chip-coral"><span class="badge-dot"></span> active</span>
+                <% } else { %><span class="chip chip-navy">lobby</span><% } %>
+              </td>
+              <td class="t-right">
+                <a class="btn btn-outline btn-sm" href="/host/monitor/<%= s._id %>">
+                  <%= s.status === "ended" ? "Results" : "Monitor" %>
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>

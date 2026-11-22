@@ -1,0 +1,40 @@
+{
+  "name": "dnhs-stem-tesla-hub",
+  "version": "2.0.0",
+  "description": "STEM Tesla Hub — multi-subject study hub for the Tesla section at Dangcagan National High School. Notes, practice quizzes, flashcards, live hosted tests, leaderboard. Express, EJS, MongoDB, Socket.IO.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:seed": "node scripts/seed.js",
+    "dev:mongo": "node scripts/dev-mongo.js",
+    "check": "node scripts/check-env.js"
+  },
+  "keywords": [
+    "dnhs", "stem", "tesla", "study-hub", "notes", "quizzes", "flashcards",
+    "live-test", "leaderboard", "mongodb", "express", "ejs", "socket.io"
+  ],
+  "author": "DNHS STEM Tesla",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.1",
+    "helmet": "^8.0.0",
+    "mongoose": "^8.7.0",
+    "morgan": "^1.10.0",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.1.2",
+    "socket.io-client": "^4.7.5"
+  }
+}

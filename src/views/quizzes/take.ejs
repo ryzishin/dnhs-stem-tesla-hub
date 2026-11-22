@@ -1,0 +1,47 @@
+<div class="container page">
+  <div class="quiz-take">
+    <div class="spread">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/s/<%= quiz.subject.slug %>"><%= quiz.subject.name %></a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span><%= quiz.title %></span>
+      </nav>
+      <% if (quiz.timeLimitMin) { %>
+        <span class="quiz-timer" id="quiz-timer" data-seconds="<%= quiz.timeLimitMin * 60 %>"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg> <span id="timer-value"><%= quiz.timeLimitMin %>:00</span></span>
+      <% } %>
+    </div>
+
+    <div class="quiz-progress" aria-hidden="true"><i id="quiz-progress-bar" style="width:0%"></i></div>
+    <p class="muted small" id="quiz-progress-text">0 of <%= quiz.items.length %> answered</p>
+
+    <form id="quiz-form" method="post" action="/quiz/<%= quiz.id %>/submit" data-total="<%= quiz.items.length %>">
+      <% quiz.items.forEach(function (it, qi) { %>
+        <fieldset class="card q-item" style="border:1px solid var(--line)">
+          <legend class="q-number">Item <%= qi + 1 %> · <%= it.points %> pt<%= it.points > 1 ? "s" : "" %><%= it.type === "short" ? " · type your answer" : "" %></legend>
+          <p class="q-question"><%= it.question %></p>
+          <% if (it.type === "mcq") { %>
+            <div class="stack" style="gap:10px">
+              <% it.options.forEach(function (o, oi) { %>
+                <label class="option">
+                  <input type="radio" name="answers[<%= it.id %>]" value="<%= o.id %>" data-q="<%= it.id %>">
+                  <span class="option-letters"><%= String.fromCharCode(65 + oi) %></span>
+                  <span><%= o.text %></span>
+                </label>
+              <% }) %>
+            </div>
+          <% } else if (it.type === "tf") { %>
+            <div class="tf-opts">
+              <label class="option"><input type="radio" name="answers[<%= it.id %>]" value="true" data-q="<%= it.id %>"> True</label>
+              <label class="option"><input type="radio" name="answers[<%= it.id %>]" value="false" data-q="<%= it.id %>"> False</label>
+            </div>
+          <% } else { %>
+            <input class="input" type="text" name="answers[<%= it.id %>]" data-q="<%= it.id %>" placeholder="Type your answer…" autocomplete="off">
+          <% } %>
+        </fieldset>
+      <% }) %>
+
+      <div class="form-actions" style="justify-content:center">
+        <button class="btn btn-primary" type="submit" style="min-width:220px">Submit answers</button>
+      </div>
+      <p class="muted small" style="text-align:center">You get +<span id="pts-hint">5</span> base points for finishing, plus 1 point per correct item. Retakes are always allowed.</p>
+    </form>
+  </div>
+</div>

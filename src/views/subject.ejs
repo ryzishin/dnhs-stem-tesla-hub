@@ -1,0 +1,84 @@
+<div class="container page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/hub">Hub</a> <svg class="icon icon-sm" aria-hidden="true"><use href="#i-right"></use></svg> <span><%= subject.name %></span>
+  </nav>
+
+  <div class="card subject-hero">
+    <span class="subject-tile tile-<%= subject.color %>"><svg class="icon" aria-hidden="true"><use href="#i-<%= subject.icon %>"></use></svg></span>
+    <div>
+      <h1 style="font-size:clamp(22px,4vw,30px)"><%= subject.name %></h1>
+      <% if (subject.blurb) { %><p class="muted mt-2"><%= subject.blurb %></p><% } %>
+    </div>
+    <% if (canEdit) { %>
+      <a href="/build/notes?subject=<%= subject.slug %>" class="btn btn-outline btn-sm" style="margin-left:auto">
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#i-edit"></use></svg> Build
+      </a>
+    <% } %>
+  </div>
+
+  <section class="page" style="gap: var(--sp-3)">
+    <div class="section-title-row">
+      <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+      <h2 style="font-size:20px">Notes</h2>
+    </div>
+    <% if (notes.length) { %>
+      <div class="content-list">
+        <% notes.forEach(function (n) { %>
+          <a class="card card-hover content-item" href="/notes/<%= n._id %>">
+            <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+            <span><b><%= n.title %></b><br><span class="muted"><%= n.blurb || "" %></span></span>
+            <span class="spacer"></span>
+            <svg class="icon icon-sm" aria-hidden="true" style="color:var(--faint)"><use href="#i-right"></use></svg>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty"><p>No published notes yet for this subject.</p></div>
+    <% } %>
+  </section>
+
+  <section class="page" style="gap: var(--sp-3)">
+    <div class="section-title-row">
+      <svg class="icon" aria-hidden="true"><use href="#i-quiz"></use></svg>
+      <h2 style="font-size:20px">Practice quizzes</h2>
+    </div>
+    <% if (quizzes.length) { %>
+      <div class="content-list">
+        <% quizzes.forEach(function (q) { %>
+          <a class="card card-hover content-item" href="/quiz/<%= q._id %>">
+            <svg class="icon" aria-hidden="true"><use href="#i-quiz"></use></svg>
+            <span>
+              <b><%= q.title %></b><br>
+              <span class="muted"><%= plural(q.items.length, "item") %><%= q.timeLimitMin ? " · " + q.timeLimitMin + " min limit" : "" %><%= bestByQuiz[q._id.toString()] >= 0 ? " · your best " + bestByQuiz[q._id.toString()] + "%" : "" %></span>
+            </span>
+            <span class="spacer"></span>
+            <svg class="icon icon-sm" aria-hidden="true" style="color:var(--faint)"><use href="#i-right"></use></svg>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty"><p>No practice quizzes yet for this subject.</p></div>
+    <% } %>
+  </section>
+
+  <section class="page" style="gap: var(--sp-3)">
+    <div class="section-title-row">
+      <svg class="icon" aria-hidden="true"><use href="#i-cards"></use></svg>
+      <h2 style="font-size:20px">Flashcards</h2>
+    </div>
+    <% if (decks.length) { %>
+      <div class="content-list">
+        <% decks.forEach(function (d) { %>
+          <a class="card card-hover content-item" href="/deck/<%= d._id %>">
+            <svg class="icon" aria-hidden="true"><use href="#i-cards"></use></svg>
+            <span><b><%= d.title %></b><br><span class="muted"><%= plural(d.cards.length, "card") %></span></span>
+            <span class="spacer"></span>
+            <svg class="icon icon-sm" aria-hidden="true" style="color:var(--faint)"><use href="#i-right"></use></svg>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty"><p>No flashcard decks yet for this subject.</p></div>
+    <% } %>
+  </section>
+</div>
